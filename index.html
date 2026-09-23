@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crossing Times — European border wait reports</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#14171d">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+  :root {
+    --bg: #14171d;
+    --panel: #1c2029;
+    --panel-2: #232834;
+    --line: #2e3440;
+    --text: #eceef2;
+    --text-dim: #9aa3b2;
+    --text-faint: #626a7a;
+    --amber: #f0a93c;
+    --amber-dim: #6b5426;
+    --green: #3fae7a;
+    --green-dim: #234a37;
+    --red: #e2572b;
+    --red-dim: #5c2a1a;
+    --board: #0d1015;
+    --board-text: #f0a93c;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #eef0f3;
+      --panel: #ffffff;
+      --panel-2: #f5f6f8;
+      --line: #dde1e7;
+      --text: #1a1d24;
+      --text-dim: #545c6b;
+      --text-faint: #8890a0;
+      --board: #14171d;
+      --board-text: #f0a93c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171d; --panel: #1c2029; --panel-2: #232834; --line: #2e3440;
+    --text: #eceef2; --text-dim: #9aa3b2; --text-faint: #626a7a;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 18px 60px; }
+
+  header { margin-bottom: 22px; }
+  .eyebrow-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(30px, 6vw, 42px);
+    letter-spacing: 0.2px;
+    margin: 0 0 6px;
+    line-height: 1.02;
+  }
+  .tagline { color: var(--text-dim); font-size: 14.5px; max-width: 56ch; line-height: 1.5; margin: 0; }
+  .proto-note {
+    margin-top: 10px; font-size: 12.5px; color: var(--text-faint);
+    border-left: 2px solid var(--amber); padding-left: 9px;
+  }
+
+  /* ---- Position board (schematic map) ---- */
+  .mapcard {
+    position: relative;
+    background: linear-gradient(160deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 22px 0 26px;
+  }
+  .mapcard-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 16px 0;
+  }
+  .mapcard-head h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.3px;
+    margin: 0; color: var(--text-dim);
+  }
+  .mapcard-head span { font-size: 11.5px; color: var(--text-faint); }
+  .mapbox { position: relative; width: 100%; aspect-ratio: 10 / 7; z-index: 0; }
+  .mapbox .leaflet-container { width: 100%; height: 100%; background: var(--panel-2); font-family: inherit; }
+  .mapbox .leaflet-popup-content-wrapper { background: var(--panel); color: var(--text); border-radius: 10px; }
+  .mapbox .leaflet-popup-tip { background: var(--panel); }
+  .mapbox .leaflet-popup-content { font-family: 'Inter', sans-serif; font-size: 13px; margin: 10px 12px; }
+  .mapbox .leaflet-popup-content b { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; }
+  .crossing-marker {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 2px solid #0d0f13; box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+  .crossing-marker.wait-none { background: var(--text-faint); }
+  .crossing-marker.wait-low { background: var(--green); }
+  .crossing-marker.wait-mid { background: var(--amber); }
+  .crossing-marker.wait-high { background: var(--red); }
+  .pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    cursor: pointer;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+    transition: transform 0.12s ease;
+  }
+  .pin:hover, .pin:focus-visible { transform: translate(-50%, -50%) scale(1.35); }
+  .pin.wait-none { background: var(--text-faint); }
+  .pin.wait-low { background: var(--green); }
+  .pin.wait-mid { background: var(--amber); }
+  .pin.wait-high { background: var(--red); }
+  .pin-label {
+    position: absolute; transform: translate(-50%, 4px);
+    font-size: 10.5px; color: var(--text-dim); white-space: nowrap;
+    pointer-events: none; font-weight: 500;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.4);
+  }
+  .map-legend {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    padding: 10px 16px 14px; font-size: 11px; color: var(--text-faint);
+  }
+  .map-legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .map-legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+  /* ---- Departure board ---- */
+  .board {
+    background: var(--board);
+    border-radius: 14px;
+    padding: 6px 0;
+    margin-bottom: 26px;
+    border: 1px solid var(--line);
+  }
+  .board-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px 10px;
+    border-bottom: 1px solid #262a33;
+  }
+  .board-head h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.3px; margin: 0;
+    color: #cfd4dc;
+  }
+  .board-head span { font-size: 11px; color: #6a7181; }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 11px 16px;
+    border-bottom: 1px solid #21242c;
+    background: transparent;
+    border-left: none; border-right: none; border-top: none;
+    width: 100%;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: #191c24; }
+  .row-name { font-weight: 600; font-size: 14.5px; color: #eceef2; }
+  .row-route { font-size: 12px; color: #6a7181; margin-top: 1px; }
+  .row-wait {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 18px; font-weight: 700;
+    color: var(--board-text);
+    min-width: 64px; text-align: right;
+  }
+  .row-wait.none { color: #4a5060; font-size: 15px; }
+  .row-updated { font-size: 10.5px; color: #565d6c; text-align: right; min-width: 58px; }
+
+  /* ---- Recent reports ticker ---- */
+  .ticker-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px 6px;
+    margin-bottom: 26px;
+  }
+  .ticker-card h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 600; letter-spacing: 0.3px;
+    margin: 0 0 10px; color: var(--text-dim);
+  }
+  .ticker-item {
+    display: flex; gap: 10px; padding: 8px 0;
+    border-top: 1px solid var(--line); font-size: 13px;
+  }
+  .ticker-item:first-child { border-top: none; }
+  .ticker-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .ticker-dot.wait-low { background: var(--green); }
+  .ticker-dot.wait-mid { background: var(--amber); }
+  .ticker-dot.wait-high { background: var(--red); }
+  .ticker-text b { color: var(--text); }
+  .ticker-text { color: var(--text-dim); line-height: 1.45; }
+  .ticker-time { color: var(--text-faint); font-size: 11.5px; margin-top: 2px; }
+  .empty { color: var(--text-faint); font-size: 13px; padding: 10px 0 14px; }
+
+  /* ---- Modal ---- */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(8,9,12,0.6);
+    display: none; align-items: flex-end; justify-content: center;
+    z-index: 40; padding: 0;
+  }
+  .overlay.open { display: flex; }
+  @media (min-width: 640px) { .overlay { align-items: center; } }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    width: 100%; max-width: 460px;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+    max-height: 88vh; overflow-y: auto;
+  }
+  @media (min-width: 640px) { .modal { border-radius: 16px; } }
+  .modal h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px; font-weight: 700; margin: 0 0 3px;
+  }
+  .modal .route { color: var(--text-dim); font-size: 13px; margin-bottom: 16px; }
+  label { display: block; font-size: 12.5px; color: var(--text-dim); font-weight: 500; margin: 14px 0 6px; }
+  label:first-of-type { margin-top: 0; }
+  select, input[type="number"], input[type="text"], textarea {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--line);
+    color: var(--text); border-radius: 9px; padding: 10px 12px; font-size: 15px;
+    font-family: inherit;
+  }
+  select:focus, input:focus, textarea:focus, button:focus-visible {
+    outline: 2px solid var(--amber); outline-offset: 1px;
+  }
+  .seg { display: flex; gap: 6px; }
+  .seg button {
+    flex: 1; padding: 9px 6px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--panel-2); color: var(--text-dim); font-size: 13px; font-weight: 500;
+    cursor: pointer;
+  }
+  .seg button.active { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
+  .submit-btn {
+    width: 100%; margin-top: 20px; padding: 13px; border-radius: 10px; border: none;
+    background: var(--amber); color: #1a1400; font-weight: 700; font-size: 15px;
+    cursor: pointer; font-family: 'Inter', sans-serif;
+  }
+  .submit-btn:active { transform: scale(0.99); }
+  .close-btn {
+    position: absolute; top: 14px; right: 14px; background: none; border: none;
+    color: var(--text-faint); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px;
+  }
+  .modal-inner { position: relative; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px); background: var(--green); color: #06231a;
+    padding: 11px 18px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
+    opacity: 0; transition: all 0.25s ease; pointer-events: none; z-index: 60;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  footer { text-align: center; margin-top: 6px; }
+  footer button {
+    background: none; border: none; color: var(--text-faint); font-size: 11.5px;
+    text-decoration: underline; cursor: pointer; padding: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow-row">
+      <h1>Crossing Times</h1>
+    </div>
+    <p class="tagline">Live border wait reports from people actually at the crossing — European land borders where queues genuinely happen.</p>
+    <p class="proto-note">Prototype: reports save to this device only, so you can try the full flow. The shipped app will sync reports from everyone in real time.</p>
+  </header>
+
+  <div class="mapcard">
+    <div class="mapcard-head">
+      <h2>Crossing positions</h2>
+      <span>tap a pin</span>
+    </div>
+    <div class="mapbox" id="mapbox"></div>
+    <div class="map-legend">
+      <span><i style="background:var(--text-faint)"></i> No reports yet</span>
+      <span><i style="background:var(--green)"></i> Under 20 min</span>
+      <span><i style="background:var(--amber)"></i> 20&ndash;60 min</span>
+      <span><i style="background:var(--red)"></i> Over 60 min</span>
+    </div>
+  </div>
+
+  <div class="board">
+    <div class="board-head">
+      <h2>Current waits</h2>
+      <span id="board-count">0 crossings</span>
+    </div>
+    <div id="board-rows"></div>
+  </div>
+
+  <div class="ticker-card">
+    <h2>Recent reports</h2>
+    <div id="ticker"></div>
+  </div>
+
+  <footer>
+    <button id="clear-data">Clear demo data on this device</button>
+  </footer>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-inner">
+      <button class="close-btn" id="close-modal" aria-label="Close">&times;</button>
+      <h3 id="modal-title">Report a wait</h3>
+      <div class="route" id="modal-route"></div>
+
+      <label for="crossing-select">Crossing</label>
+      <select id="crossing-select"></select>
+
+      <label>Direction</label>
+      <div class="seg" id="direction-seg"></div>
+
+      <label for="minutes-input">Wait time (minutes)</label>
+      <input type="number" id="minutes-input" min="0" max="600" placeholder="e.g. 45">
+
+      <label>Vehicle</label>
+      <div class="seg" id="vehicle-seg">
+        <button data-v="car" class="active">Car</button>
+        <button data-v="truck">Truck</button>
+        <button data-v="bus">Bus</button>
+        <button data-v="foot">On foot</button>
+      </div>
+
+      <label for="note-input">Note (optional)</label>
+      <input type="text" id="note-input" maxlength="80" placeholder="e.g. only one lane open">
+
+      <button class="submit-btn" id="submit-report">Submit report</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Report added</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CROSSINGS = [
+    { id: "dover-calais",   name: "Dover \u2192 Calais",         a: "UK",     b: "France",  lat: 51.13, lng: 1.31,  route: "Ferry crossing, Strait of Dover" },
+    { id: "eurotunnel",     name: "Folkestone \u2192 Coquelles",  a: "UK",     b: "France",  lat: 51.09, lng: 1.17,  route: "Channel Tunnel (Eurotunnel)" },
+    { id: "medyka",         name: "Medyka \u2192 Shehyni",        a: "Poland", b: "Ukraine", lat: 49.81, lng: 22.95, route: "Main PL\u2013UA road crossing" },
+    { id: "korczowa",       name: "Korczowa \u2192 Krakovets",    a: "Poland", b: "Ukraine", lat: 50.00, lng: 23.19, route: "Major freight route" },
+    { id: "terespol",       name: "Terespol \u2192 Brest",        a: "Poland", b: "Belarus", lat: 52.08, lng: 23.62, route: "EU external border" },
+    { id: "kapitan-a",      name: "Kapitan Andreevo \u2192 Kap\u0131kule", a: "Bulgaria", b: "T\u00fcrkiye", lat: 41.71, lng: 26.36, route: "Busiest EU\u2013T\u00fcrkiye truck crossing" },
+    { id: "horgos",         name: "Horgo\u0161 \u2192 R\u00f6szke",         a: "Serbia", b: "Hungary", lat: 46.17, lng: 19.98, route: "Main Belgrade\u2013Budapest route" },
+    { id: "batrovci",       name: "Batrovci \u2192 Bajakovo",     a: "Serbia", b: "Croatia", lat: 45.12, lng: 19.02, route: "E70 motorway crossing" },
+    { id: "la-linea",       name: "La L\u00ednea \u2192 Gibraltar", a: "Spain",  b: "Gibraltar", lat: 36.17, lng: -5.35, route: "Land border, frequent foot queues" },
+    { id: "narva",          name: "Narva \u2192 Ivangorod",       a: "Estonia", b: "Russia",  lat: 59.38, lng: 28.20, route: "EU external border, foot & car" }
+  ];
+
+  var LNG_MIN = -6, LNG_MAX = 31, LAT_MIN = 35, LAT_MAX = 60;
+  function project(c) {
+    var x = ((c.lng - LNG_MIN) / (LNG_MAX - LNG_MIN)) * 88 + 6;
+    var y = ((LAT_MAX - c.lat) / (LAT_MAX - LAT_MIN)) * 84 + 6;
+    return { xPct: x, yPct: y };
+  }
+
+  var STORE_KEY = "borderwait_reports_v1";
+  var FOUR_HOURS = 4 * 60 * 60 * 1000;
+
+  function loadReports() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function saveReports(list) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) {}
+  }
+  var reports = loadReports();
+
+  function avgWait(crossingId) {
+    var now = Date.now();
+    var relevant = reports.filter(function (r) {
+      return r.crossingId === crossingId && (now - r.ts) < FOUR_HOURS;
+    });
+    if (!relevant.length) return null;
+    var sum = relevant.reduce(function (s, r) { return s + r.minutes; }, 0);
+    return { minutes: Math.round(sum / relevant.length), latest: Math.max.apply(null, relevant.map(function (r) { return r.ts; })), count: relevant.length };
+  }
+  function bucket(min) {
+    if (min === null) return "none";
+    if (min < 20) return "low";
+    if (min < 60) return "mid";
+    return "high";
+  }
+  function relTime(ts) {
+    var diff = Math.max(0, Date.now() - ts);
+    var m = Math.round(diff / 60000);
+    if (m < 1) return "just now";
+    if (m < 60) return m + "m ago";
+    var h = Math.round(m / 60);
+    if (h < 24) return h + "h ago";
+    return Math.round(h / 24) + "d ago";
+  }
+
+  var mapbox = document.getElementById("mapbox");
+  var boardRows = document.getElementById("board-rows");
+  var boardCount = document.getElementById("board-count");
+  var ticker = document.getElementById("ticker");
+  var crossingSelect = document.getElementById("crossing-select");
+  var directionSeg = document.getElementById("direction-seg");
+  var vehicleSeg = document.getElementById("vehicle-seg");
+  var overlay = document.getElementById("overlay");
+  var modalRoute = document.getElementById("modal-route");
+  var modalTitle = document.getElementById("modal-title");
+  var minutesInput = document.getElementById("minutes-input");
+  var noteInput = document.getElementById("note-input");
+  var toast = document.getElementById("toast");
+
+  var selectedVehicle = "car";
+  var selectedDirection = 0;
+
+  var leafletMap = null;
+  var leafletMarkers = {};
+
+  function iconFor(min) {
+    return L.divIcon({
+      className: "",
+      html: '<div class="crossing-marker wait-' + bucket(min) + '"></div>',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+      popupAnchor: [0, -10]
+    });
+  }
+
+  function initMap() {
+    leafletMap = L.map("mapbox", { scrollWheelZoom: false }).setView([50, 15], 4);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18
+    }).addTo(leafletMap);
+
+    CROSSINGS.forEach(function (c) {
+      var marker = L.marker([c.lat, c.lng], { icon: iconFor(null) }).addTo(leafletMap);
+      marker.bindPopup(popupHtml(c, null));
+      marker.on("click", function () { openModal(c.id); });
+      leafletMarkers[c.id] = marker;
+    });
+  }
+
+  function popupHtml(c, avg) {
+    var waitText = avg ? avg.minutes + " min avg (" + avg.count + " report" + (avg.count === 1 ? "" : "s") + ")" : "No reports yet";
+    return '<b>' + c.name + '</b><br>' + c.a + ' \u2194 ' + c.b + '<br><span style="color:var(--text-dim)">' + waitText + '</span>';
+  }
+
+  function buildMap() {
+    if (!leafletMap) { initMap(); }
+    CROSSINGS.forEach(function (c) {
+      var avg = avgWait(c.id);
+      var marker = leafletMarkers[c.id];
+      marker.setIcon(iconFor(avg ? avg.minutes : null));
+      marker.setPopupContent(popupHtml(c, avg));
+    });
+  }
+
+  function buildBoard() {
+    var withAvg = CROSSINGS.map(function (c) { return { c: c, avg: avgWait(c.id) }; });
+    withAvg.sort(function (p, q) {
+      var av = p.avg ? p.avg.minutes : -1;
+      var bv = q.avg ? q.avg.minutes : -1;
+      return bv - av;
+    });
+    boardRows.innerHTML = "";
+    boardCount.textContent = CROSSINGS.length + " crossings";
+    withAvg.forEach(function (p) {
+      var row = document.createElement("button");
+      row.className = "row";
+      row.addEventListener("click", function () { openModal(p.c.id); });
+      var waitClass = p.avg ? "" : "none";
+      var waitText = p.avg ? p.avg.minutes + "m" : "\u2014";
+      row.innerHTML =
+        '<div><div class="row-name">' + p.c.name + '</div><div class="row-route">' + p.c.a + ' \u2194 ' + p.c.b + '</div></div>' +
+        '<div class="row-wait ' + waitClass + '">' + waitText + '</div>' +
+        '<div class="row-updated">' + (p.avg ? relTime(p.avg.latest) : "no data") + '</div>';
+      boardRows.appendChild(row);
+    });
+  }
+
+  function buildTicker() {
+    var recent = reports.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, 12);
+    if (!recent.length) {
+      ticker.innerHTML = '<div class="empty">No reports yet on this device. Tap a crossing above and add the first one.</div>';
+      return;
+    }
+    ticker.innerHTML = "";
+    recent.forEach(function (r) {
+      var c = CROSSINGS.find(function (x) { return x.id === r.crossingId; });
+      if (!c) return;
+      var item = document.createElement("div");
+      item.className = "ticker-item";
+      var dirText = r.direction === 0 ? (c.a + " \u2192 " + c.b) : (c.b + " \u2192 " + c.a);
+      item.innerHTML =
+        '<div class="ticker-dot wait-' + bucket(r.minutes) + '"></div>' +
+        '<div class="ticker-text"><b>' + c.name + '</b> \u2014 ' + r.minutes + ' min, ' + r.vehicle + ', ' + dirText +
+        (r.note ? ' <span style="color:var(--text-faint)">\u201c' + escapeHtml(r.note) + '\u201d</span>' : '') +
+        '<div class="ticker-time">' + relTime(r.ts) + '</div></div>';
+      ticker.appendChild(item);
+    });
+  }
+
+  function escapeHtml(s) {
+    var d = document.createElement("div");
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function renderAll() {
+    buildMap();
+    buildBoard();
+    buildTicker();
+  }
+
+  function populateCrossingSelect(selectedId) {
+    crossingSelect.innerHTML = "";
+    CROSSINGS.forEach(function (c) {
+      var opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.name;
+      if (c.id === selectedId) opt.selected = true;
+      crossingSelect.appendChild(opt);
+    });
+  }
+
+  function updateDirectionSeg(crossingId) {
+    var c = CROSSINGS.find(function (x) { return x.id === crossingId; });
+    directionSeg.innerHTML = "";
+    [0, 1].forEach(function (dir) {
+      var btn = document.createElement("button");
+      btn.textContent = dir === 0 ? (c.a + " \u2192 " + c.b) : (c.b + " \u2192 " + c.a);
+      if (dir === selectedDirection) btn.className = "active";
+      btn.addEventListener("click", function () {
+        selectedDirection = dir;
+        updateDirectionSeg(crossingId);
+      });
+      directionSeg.appendChild(btn);
+    });
+  }
+
+  function openModal(crossingId) {
+    selectedDirection = 0;
+    selectedVehicle = "car";
+    Array.prototype.forEach.call(vehicleSeg.children, function (b) {
+      b.classList.toggle("active", b.dataset.v === "car");
+    });
+    populateCrossingSelect(crossingId);
+    var c = CROSSINGS.find(function (x) { return x.id === crossingId; });
+    modalRoute.textContent = c.route;
+    updateDirectionSeg(crossingId);
+    minutesInput.value = "";
+    noteInput.value = "";
+    overlay.classList.add("open");
+    setTimeout(function () { minutesInput.focus(); }, 50);
+  }
+  function closeModal() { overlay.classList.remove("open"); }
+
+  document.getElementById("close-modal").addEventListener("click", closeModal);
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
+  crossingSelect.addEventListener("change", function () {
+    selectedDirection = 0;
+    updateDirectionSeg(crossingSelect.value);
+    var c = CROSSINGS.find(function (x) { return x.id === crossingSelect.value; });
+    modalRoute.textContent = c.route;
+  });
+  vehicleSeg.addEventListener("click", function (e) {
+    var btn = e.target.closest("button");
+    if (!btn) return;
+    selectedVehicle = btn.dataset.v;
+    Array.prototype.forEach.call(vehicleSeg.children, function (b) { b.classList.toggle("active", b === btn); });
+  });
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(function () { toast.classList.remove("show"); }, 1800);
+  }
+
+  document.getElementById("submit-report").addEventListener("click", function () {
+    var minutes = parseInt(minutesInput.value, 10);
+    if (isNaN(minutes) || minutes < 0) {
+      minutesInput.focus();
+      minutesInput.style.outline = "2px solid var(--red)";
+      setTimeout(function () { minutesInput.style.outline = ""; }, 900);
+      return;
+    }
+    var report = {
+      id: "r" + Date.now() + Math.random().toString(36).slice(2, 7),
+      crossingId: crossingSelect.value,
+      minutes: minutes,
+      direction: selectedDirection,
+      vehicle: selectedVehicle,
+      note: noteInput.value.trim().slice(0, 80),
+      ts: Date.now()
+    };
+    reports.push(report);
+    saveReports(reports);
+    closeModal();
+    renderAll();
+    showToast("Report added");
+  });
+
+  document.getElementById("clear-data").addEventListener("click", function () {
+    reports = [];
+    saveReports(reports);
+    renderAll();
+    showToast("Demo data cleared");
+  });
+
+  renderAll();
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+})();
+</script>
+</body>
+</html>
