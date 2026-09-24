@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Crossing Times — European border wait reports</title>
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="theme-color" content="#14171d">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
@@ -26,6 +26,7 @@
     --green-dim: #234a37;
     --red: #e2572b;
     --red-dim: #5c2a1a;
+    --blue: #2f8fe0;
     --board: #0d1015;
     --board-text: #f0a93c;
     padding-top: env(safe-area-inset-top, 0px);
@@ -33,15 +34,9 @@
   }
   @media (prefers-color-scheme: light) {
     :root:not([data-theme="dark"]) {
-      --bg: #eef0f3;
-      --panel: #ffffff;
-      --panel-2: #f5f6f8;
-      --line: #dde1e7;
-      --text: #1a1d24;
-      --text-dim: #545c6b;
-      --text-faint: #8890a0;
-      --board: #14171d;
-      --board-text: #f0a93c;
+      --bg: #eef0f3; --panel: #ffffff; --panel-2: #f5f6f8; --line: #dde1e7;
+      --text: #1a1d24; --text-dim: #545c6b; --text-faint: #8890a0;
+      --board: #14171d; --board-text: #f0a93c;
     }
   }
   :root[data-theme="dark"] {
@@ -50,157 +45,66 @@
   }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; box-sizing: border-box; }
   *, *::before, *::after { box-sizing: inherit; }
-  body {
-    margin: 0;
-    min-height: 100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
+  body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
   .wrap { max-width: 880px; margin: 0 auto; padding: 28px 18px 60px; }
 
   header { margin-bottom: 22px; }
-  .eyebrow-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  h1 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-weight: 700;
-    font-size: clamp(30px, 6vw, 42px);
-    letter-spacing: 0.2px;
-    margin: 0 0 6px;
-    line-height: 1.02;
-  }
+  .eyebrow-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: clamp(30px, 6vw, 42px); letter-spacing: 0.2px; margin: 0 0 6px; line-height: 1.02; }
   .tagline { color: var(--text-dim); font-size: 14.5px; max-width: 56ch; line-height: 1.5; margin: 0; }
-  .proto-note {
-    margin-top: 10px; font-size: 12.5px; color: var(--text-faint);
-    border-left: 2px solid var(--amber); padding-left: 9px;
+  .proto-note { margin-top: 10px; font-size: 12.5px; color: var(--text-faint); border-left: 2px solid var(--amber); padding-left: 9px; }
+  .lang-switch select {
+    background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+    border-radius: 8px; padding: 7px 10px; font-size: 12.5px; font-family: inherit; cursor: pointer;
   }
 
-  /* ---- Position board (schematic map) ---- */
-  .mapcard {
-    position: relative;
-    background: linear-gradient(160deg, var(--panel-2), var(--panel));
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    overflow: hidden;
-    margin: 22px 0 26px;
-  }
-  .mapcard-head {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 16px 0;
-  }
-  .mapcard-head h2 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px; font-weight: 600; letter-spacing: 0.3px;
-    margin: 0; color: var(--text-dim);
-  }
+  .mapcard { position: relative; background: linear-gradient(160deg, var(--panel-2), var(--panel)); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin: 22px 0 26px; }
+  .mapcard-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 0; }
+  .mapcard-head h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.3px; margin: 0; color: var(--text-dim); }
   .mapcard-head span { font-size: 11.5px; color: var(--text-faint); }
+  .locate-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px 12px; flex-wrap: wrap; }
+  .locate-btn { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); border-radius: 8px; padding: 7px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .locate-btn:disabled { opacity: 0.55; cursor: default; }
+  .locate-status { font-size: 11.5px; color: var(--text-faint); }
   .mapbox { position: relative; width: 100%; aspect-ratio: 10 / 7; z-index: 0; }
   .mapbox .leaflet-container { width: 100%; height: 100%; background: var(--panel-2); font-family: inherit; }
   .mapbox .leaflet-popup-content-wrapper { background: var(--panel); color: var(--text); border-radius: 10px; }
   .mapbox .leaflet-popup-tip { background: var(--panel); }
   .mapbox .leaflet-popup-content { font-family: 'Inter', sans-serif; font-size: 13px; margin: 10px 12px; }
   .mapbox .leaflet-popup-content b { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; }
-  .crossing-marker {
-    width: 18px; height: 18px; border-radius: 50%;
-    border: 2px solid #0d0f13; box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-  }
+  .crossing-marker { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #0d0f13; box-shadow: 0 1px 4px rgba(0,0,0,0.5); }
   .crossing-marker.wait-none { background: var(--text-faint); }
   .crossing-marker.wait-low { background: var(--green); }
   .crossing-marker.wait-mid { background: var(--amber); }
   .crossing-marker.wait-high { background: var(--red); }
-  .pin {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    width: 15px; height: 15px;
-    border-radius: 50%;
-    border: 2px solid var(--bg);
-    cursor: pointer;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
-    transition: transform 0.12s ease;
-  }
-  .pin:hover, .pin:focus-visible { transform: translate(-50%, -50%) scale(1.35); }
-  .pin.wait-none { background: var(--text-faint); }
-  .pin.wait-low { background: var(--green); }
-  .pin.wait-mid { background: var(--amber); }
-  .pin.wait-high { background: var(--red); }
-  .pin-label {
-    position: absolute; transform: translate(-50%, 4px);
-    font-size: 10.5px; color: var(--text-dim); white-space: nowrap;
-    pointer-events: none; font-weight: 500;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.4);
-  }
-  .map-legend {
-    display: flex; flex-wrap: wrap; gap: 14px;
-    padding: 10px 16px 14px; font-size: 11px; color: var(--text-faint);
-  }
+  .user-marker-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--blue); border: 3px solid #fff; box-shadow: 0 0 0 5px rgba(47,143,224,0.3); }
+
+  .map-legend { display: flex; flex-wrap: wrap; gap: 14px; padding: 10px 16px 14px; font-size: 11px; color: var(--text-faint); }
   .map-legend span { display: inline-flex; align-items: center; gap: 5px; }
   .map-legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 
-  /* ---- Departure board ---- */
-  .board {
-    background: var(--board);
-    border-radius: 14px;
-    padding: 6px 0;
-    margin-bottom: 26px;
-    border: 1px solid var(--line);
-  }
-  .board-head {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 16px 10px;
-    border-bottom: 1px solid #262a33;
-  }
-  .board-head h2 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px; font-weight: 600; letter-spacing: 0.3px; margin: 0;
-    color: #cfd4dc;
-  }
-  .board-head span { font-size: 11px; color: #6a7181; }
-  .row {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 10px;
-    align-items: center;
-    padding: 11px 16px;
-    border-bottom: 1px solid #21242c;
-    background: transparent;
-    border-left: none; border-right: none; border-top: none;
-    width: 100%;
-    color: inherit;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-  }
+  .board { background: var(--board); border-radius: 14px; padding: 6px 0; margin-bottom: 26px; border: 1px solid var(--line); }
+  .board-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 10px; border-bottom: 1px solid #262a33; flex-wrap: wrap; gap: 8px; }
+  .board-head h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.3px; margin: 0; color: #cfd4dc; }
+  .board-head-right { display: flex; align-items: center; gap: 10px; }
+  .board-head span.count { font-size: 11px; color: #6a7181; }
+  .sort-toggle { display: flex; gap: 6px; }
+  .sort-toggle button { padding: 5px 10px; border-radius: 7px; border: 1px solid #2b2f39; background: #191c24; color: #9aa3b2; font-size: 11.5px; cursor: pointer; font-family: inherit; }
+  .sort-toggle button.active { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
+  .row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 11px 16px; border-bottom: 1px solid #21242c; background: transparent; border-left: none; border-right: none; border-top: none; width: 100%; color: inherit; font: inherit; text-align: left; cursor: pointer; }
   .row:last-child { border-bottom: none; }
   .row:hover { background: #191c24; }
   .row-name { font-weight: 600; font-size: 14.5px; color: #eceef2; }
   .row-route { font-size: 12px; color: #6a7181; margin-top: 1px; }
-  .row-wait {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 18px; font-weight: 700;
-    color: var(--board-text);
-    min-width: 64px; text-align: right;
-  }
+  .row-distance { font-size: 11px; color: #4d84b5; margin-top: 1px; }
+  .badge-closest { display: inline-block; margin-left: 6px; font-size: 10px; background: var(--amber-dim); color: var(--amber); padding: 1px 6px; border-radius: 999px; font-weight: 700; vertical-align: middle; }
+  .row-wait { font-family: 'Roboto Mono', monospace; font-size: 18px; font-weight: 700; color: var(--board-text); min-width: 64px; text-align: right; }
   .row-wait.none { color: #4a5060; font-size: 15px; }
   .row-updated { font-size: 10.5px; color: #565d6c; text-align: right; min-width: 58px; }
 
-  /* ---- Recent reports ticker ---- */
-  .ticker-card {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 14px 16px 6px;
-    margin-bottom: 26px;
-  }
-  .ticker-card h2 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 15px; font-weight: 600; letter-spacing: 0.3px;
-    margin: 0 0 10px; color: var(--text-dim);
-  }
-  .ticker-item {
-    display: flex; gap: 10px; padding: 8px 0;
-    border-top: 1px solid var(--line); font-size: 13px;
-  }
+  .ticker-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 6px; margin-bottom: 26px; }
+  .ticker-card h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.3px; margin: 0 0 10px; color: var(--text-dim); }
+  .ticker-item { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
   .ticker-item:first-child { border-top: none; }
   .ticker-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
   .ticker-dot.wait-low { background: var(--green); }
@@ -211,71 +115,30 @@
   .ticker-time { color: var(--text-faint); font-size: 11.5px; margin-top: 2px; }
   .empty { color: var(--text-faint); font-size: 13px; padding: 10px 0 14px; }
 
-  /* ---- Modal ---- */
-  .overlay {
-    position: fixed; inset: 0; background: rgba(8,9,12,0.6);
-    display: none; align-items: flex-end; justify-content: center;
-    z-index: 40; padding: 0;
-  }
+  .overlay { position: fixed; inset: 0; background: rgba(8,9,12,0.6); display: none; align-items: flex-end; justify-content: center; z-index: 40; padding: 0; }
   .overlay.open { display: flex; }
   @media (min-width: 640px) { .overlay { align-items: center; } }
-  .modal {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    width: 100%; max-width: 460px;
-    border-radius: 16px 16px 0 0;
-    padding: 20px 20px calc(22px + env(safe-area-inset-bottom, 0px));
-    max-height: 88vh; overflow-y: auto;
-  }
+  .modal { background: var(--panel); border: 1px solid var(--line); width: 100%; max-width: 460px; border-radius: 16px 16px 0 0; padding: 20px 20px calc(22px + env(safe-area-inset-bottom, 0px)); max-height: 88vh; overflow-y: auto; }
   @media (min-width: 640px) { .modal { border-radius: 16px; } }
-  .modal h3 {
-    font-family: 'Barlow Condensed', sans-serif;
-    font-size: 22px; font-weight: 700; margin: 0 0 3px;
-  }
+  .modal h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; margin: 0 0 3px; }
   .modal .route { color: var(--text-dim); font-size: 13px; margin-bottom: 16px; }
   label { display: block; font-size: 12.5px; color: var(--text-dim); font-weight: 500; margin: 14px 0 6px; }
   label:first-of-type { margin-top: 0; }
-  select, input[type="number"], input[type="text"], textarea {
-    width: 100%; background: var(--panel-2); border: 1px solid var(--line);
-    color: var(--text); border-radius: 9px; padding: 10px 12px; font-size: 15px;
-    font-family: inherit;
-  }
-  select:focus, input:focus, textarea:focus, button:focus-visible {
-    outline: 2px solid var(--amber); outline-offset: 1px;
-  }
-  .seg { display: flex; gap: 6px; }
-  .seg button {
-    flex: 1; padding: 9px 6px; border-radius: 8px; border: 1px solid var(--line);
-    background: var(--panel-2); color: var(--text-dim); font-size: 13px; font-weight: 500;
-    cursor: pointer;
-  }
+  select, input[type="number"], input[type="text"], textarea { width: 100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 9px; padding: 10px 12px; font-size: 15px; font-family: inherit; }
+  select:focus, input:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
+  .seg { display: flex; gap: 6px; flex-wrap: wrap; }
+  .seg button { flex: 1; min-width: 64px; padding: 9px 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text-dim); font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; }
   .seg button.active { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
-  .submit-btn {
-    width: 100%; margin-top: 20px; padding: 13px; border-radius: 10px; border: none;
-    background: var(--amber); color: #1a1400; font-weight: 700; font-size: 15px;
-    cursor: pointer; font-family: 'Inter', sans-serif;
-  }
+  .submit-btn { width: 100%; margin-top: 20px; padding: 13px; border-radius: 10px; border: none; background: var(--amber); color: #1a1400; font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Inter', sans-serif; }
   .submit-btn:active { transform: scale(0.99); }
-  .close-btn {
-    position: absolute; top: 14px; right: 14px; background: none; border: none;
-    color: var(--text-faint); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px;
-  }
+  .close-btn { position: absolute; top: 14px; right: 14px; background: none; border: none; color: var(--text-faint); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px; }
   .modal-inner { position: relative; }
 
-  .toast {
-    position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-    transform: translate(-50%, 20px); background: var(--green); color: #06231a;
-    padding: 11px 18px; border-radius: 999px; font-size: 13.5px; font-weight: 600;
-    opacity: 0; transition: all 0.25s ease; pointer-events: none; z-index: 60;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-  }
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--green); color: #06231a; padding: 11px 18px; border-radius: 999px; font-size: 13.5px; font-weight: 600; opacity: 0; transition: all 0.25s ease; pointer-events: none; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   footer { text-align: center; margin-top: 6px; }
-  footer button {
-    background: none; border: none; color: var(--text-faint); font-size: 11.5px;
-    text-decoration: underline; cursor: pointer; padding: 6px;
-  }
+  footer button { background: none; border: none; color: var(--text-faint); font-size: 11.5px; text-decoration: underline; cursor: pointer; padding: 6px; font-family: inherit; }
 </style>
 </head>
 <body>
@@ -283,41 +146,56 @@
 
   <header>
     <div class="eyebrow-row">
-      <h1>Crossing Times</h1>
+      <div>
+        <h1 data-i18n="title">Crossing Times</h1>
+        <p class="tagline" data-i18n="tagline">Live border wait reports from people actually at the crossing.</p>
+      </div>
+      <div class="lang-switch">
+        <select id="lang-select" aria-label="Language"></select>
+      </div>
     </div>
-    <p class="tagline">Live border wait reports from people actually at the crossing — European land borders where queues genuinely happen.</p>
-    <p class="proto-note">Prototype: reports save to this device only, so you can try the full flow. The shipped app will sync reports from everyone in real time.</p>
+    <p class="proto-note" data-i18n="protoNote">Reports currently save on this device only.</p>
   </header>
 
   <div class="mapcard">
     <div class="mapcard-head">
-      <h2>Crossing positions</h2>
-      <span>tap a pin</span>
+      <h2 data-i18n="mapHead">Border crossings map</h2>
+      <span data-i18n="mapHint">tap a pin</span>
+    </div>
+    <div class="locate-row">
+      <button class="locate-btn" id="locate-btn" data-i18n="locateBtn">Use my location</button>
+      <span class="locate-status" id="locate-status"></span>
     </div>
     <div class="mapbox" id="mapbox"></div>
     <div class="map-legend">
-      <span><i style="background:var(--text-faint)"></i> No reports yet</span>
-      <span><i style="background:var(--green)"></i> Under 20 min</span>
-      <span><i style="background:var(--amber)"></i> 20&ndash;60 min</span>
-      <span><i style="background:var(--red)"></i> Over 60 min</span>
+      <span><i style="background:var(--text-faint)"></i> <span data-i18n="legendNone">No reports yet</span></span>
+      <span><i style="background:var(--green)"></i> <span data-i18n="legendLow">Under 20 min</span></span>
+      <span><i style="background:var(--amber)"></i> <span data-i18n="legendMid">20–60 min</span></span>
+      <span><i style="background:var(--red)"></i> <span data-i18n="legendHigh">Over 60 min</span></span>
     </div>
   </div>
 
   <div class="board">
     <div class="board-head">
-      <h2>Current waits</h2>
-      <span id="board-count">0 crossings</span>
+      <h2 data-i18n="boardHead">Current waits</h2>
+      <div class="board-head-right">
+        <div class="sort-toggle" id="sort-toggle">
+          <button data-mode="wait" class="active" data-i18n="sortBusiest">Busiest</button>
+          <button data-mode="distance" data-i18n="sortNearest">Nearest</button>
+        </div>
+        <span class="count" id="board-count"></span>
+      </div>
     </div>
     <div id="board-rows"></div>
   </div>
 
   <div class="ticker-card">
-    <h2>Recent reports</h2>
+    <h2 data-i18n="tickerHead">Recent reports</h2>
     <div id="ticker"></div>
   </div>
 
   <footer>
-    <button id="clear-data">Clear demo data on this device</button>
+    <button id="clear-data" data-i18n="footerClear">Clear demo data on this device</button>
   </footer>
 </div>
 
@@ -325,30 +203,25 @@
   <div class="modal">
     <div class="modal-inner">
       <button class="close-btn" id="close-modal" aria-label="Close">&times;</button>
-      <h3 id="modal-title">Report a wait</h3>
+      <h3 id="modal-title" data-i18n="modalTitle">Report a wait</h3>
       <div class="route" id="modal-route"></div>
 
-      <label for="crossing-select">Crossing</label>
+      <label for="crossing-select" data-i18n="labelCrossing">Crossing</label>
       <select id="crossing-select"></select>
 
-      <label>Direction</label>
+      <label data-i18n="labelDirection">Direction</label>
       <div class="seg" id="direction-seg"></div>
 
-      <label for="minutes-input">Wait time (minutes)</label>
-      <input type="number" id="minutes-input" min="0" max="600" placeholder="e.g. 45">
+      <label for="minutes-input" data-i18n="labelWait">Wait time (minutes)</label>
+      <input type="number" id="minutes-input" min="0" max="600">
 
-      <label>Vehicle</label>
-      <div class="seg" id="vehicle-seg">
-        <button data-v="car" class="active">Car</button>
-        <button data-v="truck">Truck</button>
-        <button data-v="bus">Bus</button>
-        <button data-v="foot">On foot</button>
-      </div>
+      <label data-i18n="labelVehicle">Vehicle</label>
+      <div class="seg" id="vehicle-seg"></div>
 
-      <label for="note-input">Note (optional)</label>
-      <input type="text" id="note-input" maxlength="80" placeholder="e.g. only one lane open">
+      <label for="note-input" data-i18n="labelNote">Note (optional)</label>
+      <input type="text" id="note-input" maxlength="80">
 
-      <button class="submit-btn" id="submit-report">Submit report</button>
+      <button class="submit-btn" id="submit-report" data-i18n="submitBtn">Submit report</button>
     </div>
   </div>
 </div>
@@ -359,65 +232,120 @@
 (function () {
   "use strict";
 
+  /* ---------------- Crossings data ---------------- */
   var CROSSINGS = [
-    { id: "dover-calais",   name: "Dover \u2192 Calais",         a: "UK",     b: "France",  lat: 51.13, lng: 1.31,  route: "Ferry crossing, Strait of Dover" },
-    { id: "eurotunnel",     name: "Folkestone \u2192 Coquelles",  a: "UK",     b: "France",  lat: 51.09, lng: 1.17,  route: "Channel Tunnel (Eurotunnel)" },
-    { id: "medyka",         name: "Medyka \u2192 Shehyni",        a: "Poland", b: "Ukraine", lat: 49.81, lng: 22.95, route: "Main PL\u2013UA road crossing" },
-    { id: "korczowa",       name: "Korczowa \u2192 Krakovets",    a: "Poland", b: "Ukraine", lat: 50.00, lng: 23.19, route: "Major freight route" },
-    { id: "terespol",       name: "Terespol \u2192 Brest",        a: "Poland", b: "Belarus", lat: 52.08, lng: 23.62, route: "EU external border" },
-    { id: "kapitan-a",      name: "Kapitan Andreevo \u2192 Kap\u0131kule", a: "Bulgaria", b: "T\u00fcrkiye", lat: 41.71, lng: 26.36, route: "Busiest EU\u2013T\u00fcrkiye truck crossing" },
-    { id: "horgos",         name: "Horgo\u0161 \u2192 R\u00f6szke",         a: "Serbia", b: "Hungary", lat: 46.17, lng: 19.98, route: "Main Belgrade\u2013Budapest route" },
-    { id: "batrovci",       name: "Batrovci \u2192 Bajakovo",     a: "Serbia", b: "Croatia", lat: 45.12, lng: 19.02, route: "E70 motorway crossing" },
-    { id: "la-linea",       name: "La L\u00ednea \u2192 Gibraltar", a: "Spain",  b: "Gibraltar", lat: 36.17, lng: -5.35, route: "Land border, frequent foot queues" },
-    { id: "narva",          name: "Narva \u2192 Ivangorod",       a: "Estonia", b: "Russia",  lat: 59.38, lng: 28.20, route: "EU external border, foot & car" }
+    { id: "dover-calais",     name: "Dover \u2192 Calais",                a: "GB", b: "FR", lat: 51.130, lng: 1.310,  type: "ferry" },
+    { id: "eurotunnel",       name: "Folkestone \u2192 Coquelles",         a: "GB", b: "FR", lat: 51.090, lng: 1.170,  type: "tunnel" },
+    { id: "medyka",           name: "Medyka \u2192 Shehyni",               a: "PL", b: "UA", lat: 49.810, lng: 22.950, type: "mainRoad" },
+    { id: "korczowa",         name: "Korczowa \u2192 Krakovets",           a: "PL", b: "UA", lat: 50.000, lng: 23.190, type: "freight" },
+    { id: "terespol",         name: "Terespol \u2192 Brest",               a: "PL", b: "BY", lat: 52.080, lng: 23.620, type: "external" },
+    { id: "kapitan-a",        name: "Kapitan Andreevo \u2192 Kap\u0131kule", a: "BG", b: "TR", lat: 41.710, lng: 26.360, type: "freight" },
+    { id: "horgos",           name: "Horgo\u0161 \u2192 R\u00f6szke",       a: "RS", b: "HU", lat: 46.170, lng: 19.980, type: "motorway" },
+    { id: "batrovci",         name: "Batrovci \u2192 Bajakovo",            a: "RS", b: "HR", lat: 45.120, lng: 19.020, type: "motorway" },
+    { id: "la-linea",         name: "La L\u00ednea \u2192 Gibraltar",       a: "ES", b: "GI", lat: 36.170, lng: -5.350, type: "footCar" },
+    { id: "narva",            name: "Narva \u2192 Ivangorod",              a: "EE", b: "RU", lat: 59.380, lng: 28.200, type: "external" },
+    { id: "stara-gradiska",   name: "Stara Gradi\u0161ka \u2192 Bosanska Gradi\u0161ka", a: "HR", b: "BA", lat: 45.153, lng: 17.245, type: "mainRoad" },
+    { id: "slavonski-samac",  name: "Slavonski \u0160amac \u2192 Bosanski \u0160amac", a: "HR", b: "BA", lat: 45.058, lng: 18.466, type: "freight" },
+    { id: "metkovic",         name: "Metkovi\u0107 \u2192 Doljani",         a: "HR", b: "BA", lat: 43.067, lng: 17.667, type: "coastal" },
+    { id: "karasovici",       name: "Karasovi\u0107i \u2192 Debeli Brijeg", a: "HR", b: "ME", lat: 42.433, lng: 18.467, type: "coastal" },
+    { id: "bogorodica",       name: "Bogorodica \u2192 Evzonoi",           a: "MK", b: "GR", lat: 41.019, lng: 22.538, type: "motorway" },
+    { id: "tabanovce",        name: "Tabanovce \u2192 Pre\u0161evo",        a: "MK", b: "RS", lat: 42.297, lng: 21.914, type: "motorway" },
+    { id: "qafe-thane",       name: "Qaf\u00eb Than\u00eb \u2192 Kjafasan", a: "AL", b: "MK", lat: 41.283, lng: 20.583, type: "mountain" },
+    { id: "blace",            name: "Blace \u2192 \u0110eneral Jankovi\u0107", a: "MK", b: "XK", lat: 42.117, lng: 21.117, type: "mainRoad" },
+    { id: "merdare",          name: "Merdare",                            a: "RS", b: "XK", lat: 42.933, lng: 21.150, type: "mainRoad" },
+    { id: "badovinci",        name: "Badovinci \u2192 Bijeljina",          a: "RS", b: "BA", lat: 44.750, lng: 19.200, type: "mainRoad" },
+    { id: "dracenovac",       name: "Dra\u010denovac \u2192 Boljare",       a: "RS", b: "ME", lat: 42.967, lng: 20.050, type: "mountain" },
+    { id: "gradina",          name: "Gradina \u2192 Kalotina",             a: "RS", b: "BG", lat: 43.150, lng: 22.850, type: "freight" },
+    { id: "hani-i-hotit",     name: "Hani i Hotit \u2192 Bo\u017eaj",       a: "AL", b: "ME", lat: 42.383, lng: 19.417, type: "mainRoad" },
+    { id: "morina",           name: "Morina \u2192 V\u00ebrmic\u00eb",      a: "AL", b: "XK", lat: 42.167, lng: 20.467, type: "mountain" },
+    { id: "kakavije",         name: "Kakavij\u00eb \u2192 Kakavia",         a: "AL", b: "GR", lat: 39.967, lng: 20.150, type: "mountain" },
+    { id: "kulla-cakor",      name: "Kull\u00eb \u2192 \u010cakor",         a: "XK", b: "ME", lat: 42.650, lng: 20.050, type: "mountain" },
+    { id: "scepan-polje",     name: "\u0160\u0107epan Polje \u2192 Ilino Brdo", a: "ME", b: "BA", lat: 43.283, lng: 18.967, type: "mountain" }
   ];
 
-  var LNG_MIN = -6, LNG_MAX = 31, LAT_MIN = 35, LAT_MAX = 60;
-  function project(c) {
-    var x = ((c.lng - LNG_MIN) / (LNG_MAX - LNG_MIN)) * 88 + 6;
-    var y = ((LAT_MAX - c.lat) / (LAT_MAX - LAT_MIN)) * 84 + 6;
-    return { xPct: x, yPct: y };
-  }
+  /* ---------------- Translations ---------------- */
+  var COUNTRIES = {
+    en: { GB:"United Kingdom", FR:"France", PL:"Poland", UA:"Ukraine", BY:"Belarus", BG:"Bulgaria", TR:"T\u00fcrkiye", RS:"Serbia", HU:"Hungary", HR:"Croatia", ES:"Spain", GI:"Gibraltar", EE:"Estonia", RU:"Russia", BA:"Bosnia and Herzegovina", ME:"Montenegro", MK:"North Macedonia", AL:"Albania", XK:"Kosovo", GR:"Greece" },
+    de: { GB:"Vereinigtes K\u00f6nigreich", FR:"Frankreich", PL:"Polen", UA:"Ukraine", BY:"Belarus", BG:"Bulgarien", TR:"T\u00fcrkei", RS:"Serbien", HU:"Ungarn", HR:"Kroatien", ES:"Spanien", GI:"Gibraltar", EE:"Estland", RU:"Russland", BA:"Bosnien und Herzegowina", ME:"Montenegro", MK:"Nordmazedonien", AL:"Albanien", XK:"Kosovo", GR:"Griechenland" },
+    sr: { GB:"Ujedinjeno Kraljevstvo", FR:"Francuska", PL:"Poljska", UA:"Ukrajina", BY:"Belorusija", BG:"Bugarska", TR:"Turska", RS:"Srbija", HU:"Ma\u0111arska", HR:"Hrvatska", ES:"\u0160panija", GI:"Gibraltar", EE:"Estonija", RU:"Rusija", BA:"Bosna i Hercegovina", ME:"Crna Gora", MK:"Severna Makedonija", AL:"Albanija", XK:"Kosovo", GR:"Gr\u010dka" },
+    mk: { GB:"\u041e\u0431\u0435\u0434\u0438\u043d\u0435\u0442\u043e \u041a\u0440\u0430\u043b\u0441\u0442\u0432\u043e", FR:"\u0424\u0440\u0430\u043d\u0446\u0438\u0458\u0430", PL:"\u041f\u043e\u043b\u0441\u043a\u0430", UA:"\u0423\u043a\u0440\u0430\u0438\u043d\u0430", BY:"\u0411\u0435\u043b\u043e\u0440\u0443\u0441\u0438\u0458\u0430", BG:"\u0411\u0443\u0433\u0430\u0440\u0438\u0458\u0430", TR:"\u0422\u0443\u0440\u0446\u0438\u0458\u0430", RS:"\u0421\u0440\u0431\u0438\u0458\u0430", HU:"\u0423\u043d\u0433\u0430\u0440\u0438\u0458\u0430", HR:"\u0425\u0440\u0432\u0430\u0442\u0441\u043a\u0430", ES:"\u0428\u043f\u0430\u043d\u0438\u0458\u0430", GI:"\u0413\u0438\u0431\u0440\u0430\u043b\u0442\u0430\u0440", EE:"\u0415\u0441\u0442\u043e\u043d\u0438\u0458\u0430", RU:"\u0420\u0443\u0441\u0438\u0458\u0430", BA:"\u0411\u043e\u0441\u043d\u0430 \u0438 \u0425\u0435\u0440\u0446\u0435\u0433\u043e\u0432\u0438\u043d\u0430", ME:"\u0426\u0440\u043d\u0430 \u0413\u043e\u0440\u0430", MK:"\u0421\u0435\u0432\u0435\u0440\u043d\u0430 \u041c\u0430\u043a\u0435\u0434\u043e\u043d\u0438\u0458\u0430", AL:"\u0410\u043b\u0431\u0430\u043d\u0438\u0458\u0430", XK:"\u041a\u043e\u0441\u043e\u0432\u043e", GR:"\u0413\u0440\u0446\u0438\u0458\u0430" },
+    tr: { GB:"Birle\u015fik Krall\u0131k", FR:"Fransa", PL:"Polonya", UA:"Ukrayna", BY:"Belarus", BG:"Bulgaristan", TR:"T\u00fcrkiye", RS:"S\u0131rbistan", HU:"Macaristan", HR:"H\u0131rvatistan", ES:"\u0130spanya", GI:"Cebelitar\u0131k", EE:"Estonya", RU:"Rusya", BA:"Bosna Hersek", ME:"Karada\u011f", MK:"Kuzey Makedonya", AL:"Arnavutluk", XK:"Kosova", GR:"Yunanistan" },
+    el: { GB:"\u0397\u03bd\u03c9\u03bc\u03ad\u03bd\u03bf \u0392\u03b1\u03c3\u03af\u03bb\u03b5\u03b9\u03bf", FR:"\u0393\u03b1\u03bb\u03bb\u03af\u03b1", PL:"\u03a0\u03bf\u03bb\u03c9\u03bd\u03af\u03b1", UA:"\u039f\u03c5\u03ba\u03c1\u03b1\u03bd\u03af\u03b1", BY:"\u039b\u03b5\u03c5\u03ba\u03bf\u03c1\u03c9\u03c3\u03af\u03b1", BG:"\u0392\u03bf\u03c5\u03bb\u03b3\u03b1\u03c1\u03af\u03b1", TR:"\u03a4\u03bf\u03c5\u03c1\u03ba\u03af\u03b1", RS:"\u03a3\u03b5\u03c1\u03b2\u03af\u03b1", HU:"\u039f\u03c5\u03b3\u03b3\u03b1\u03c1\u03af\u03b1", HR:"\u039a\u03c1\u03bf\u03b1\u03c4\u03af\u03b1", ES:"\u0399\u03c3\u03c0\u03b1\u03bd\u03af\u03b1", GI:"\u0393\u03b9\u03b2\u03c1\u03b1\u03bb\u03c4\u03ac\u03c1", EE:"\u0395\u03c3\u03b8\u03bf\u03bd\u03af\u03b1", RU:"\u03a1\u03c9\u03c3\u03af\u03b1", BA:"\u0392\u03bf\u03c3\u03bd\u03af\u03b1 \u03ba\u03b1\u03b9 \u0395\u03c1\u03b6\u03b5\u03b3\u03bf\u03b2\u03af\u03bd\u03b7", ME:"\u039c\u03b1\u03c5\u03c1\u03bf\u03b2\u03bf\u03cd\u03bd\u03b9\u03bf", MK:"\u0392\u03cc\u03c1\u03b5\u03b9\u03b1 \u039c\u03b1\u03ba\u03b5\u03b4\u03bf\u03bd\u03af\u03b1", AL:"\u0391\u03bb\u03b2\u03b1\u03bd\u03af\u03b1", XK:"\u039a\u03cc\u03c3\u03bf\u03b2\u03bf", GR:"\u0395\u03bb\u03bb\u03ac\u03b4\u03b1" }
+  };
 
+  var ROUTE_TYPES = {
+    en: { ferry:"Ferry crossing", tunnel:"Tunnel crossing", motorway:"Motorway crossing", mainRoad:"Main road crossing", mountain:"Mountain road crossing", coastal:"Coastal road crossing", external:"EU external border", freight:"Major freight route", footCar:"Land border, car & foot traffic" },
+    de: { ferry:"F\u00e4hrverbindung", tunnel:"Tunnel\u00fcbergang", motorway:"Autobahn\u00fcbergang", mainRoad:"Hauptstra\u00dfen\u00fcbergang", mountain:"Bergstra\u00dfen\u00fcbergang", coastal:"K\u00fcstenstra\u00dfen\u00fcbergang", external:"EU-Au\u00dfengrenze", freight:"Wichtige Frachtroute", footCar:"Landgrenze, Auto- und Fu\u00dfverkehr" },
+    sr: { ferry:"Trajektni prelaz", tunnel:"Tunelski prelaz", motorway:"Autoputski prelaz", mainRoad:"Prelaz na glavnom putu", mountain:"Planinski prelaz", coastal:"Prelaz na primorskom putu", external:"Spoljna granica EU", freight:"Glavna teretna ruta", footCar:"Kopnena granica, auto i pe\u0161 saobra\u0107aj" },
+    mk: { ferry:"\u0422\u0440\u0430\u0458\u0435\u043a\u0442\u0435\u043d \u043f\u0440\u0435\u043c\u0438\u043d", tunnel:"\u0422\u0443\u043d\u0435\u043b\u0441\u043a\u0438 \u043f\u0440\u0435\u043c\u0438\u043d", motorway:"\u0410\u0432\u0442\u043e\u043f\u0430\u0442\u0441\u043a\u0438 \u043f\u0440\u0435\u043c\u0438\u043d", mainRoad:"\u041f\u0440\u0435\u043c\u0438\u043d \u043d\u0430 \u0433\u043b\u0430\u0432\u0435\u043d \u043f\u0430\u0442", mountain:"\u041f\u043b\u0430\u043d\u0438\u043d\u0441\u043a\u0438 \u043f\u0440\u0435\u043c\u0438\u043d", coastal:"\u041a\u0440\u0430\u0458\u0431\u0440\u0435\u0436\u0435\u043d \u043f\u0440\u0435\u043c\u0438\u043d", external:"\u041d\u0430\u0434\u0432\u043e\u0440\u0435\u0448\u043d\u0430 \u0433\u0440\u0430\u043d\u0438\u0446\u0430 \u043d\u0430 \u0415\u0423", freight:"\u0413\u043b\u0430\u0432\u043d\u0430 \u0442\u043e\u0432\u0430\u0440\u043d\u0430 \u0440\u0443\u0442\u0430", footCar:"\u041a\u043e\u043f\u043d\u0435\u043d\u0430 \u0433\u0440\u0430\u043d\u0438\u0446\u0430, \u0430\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b\u0441\u043a\u0438 \u0438 \u043f\u0435\u0448\u0430\u0447\u043a\u0438 \u0441\u043e\u043e\u0431\u0440\u0430\u045b\u0430\u0458" },
+    tr: { ferry:"Feribot ge\u00e7i\u015fi", tunnel:"T\u00fcnel ge\u00e7i\u015fi", motorway:"Otoyol ge\u00e7i\u015fi", mainRoad:"Ana yol ge\u00e7i\u015fi", mountain:"Da\u011f yolu ge\u00e7i\u015fi", coastal:"K\u0131y\u0131 yolu ge\u00e7i\u015fi", external:"AB d\u0131\u015f s\u0131n\u0131r\u0131", freight:"\u00d6nemli y\u00fck ta\u015f\u0131mac\u0131l\u0131\u011f\u0131 rotas\u0131", footCar:"Kara s\u0131n\u0131r\u0131, ara\u00e7 ve yaya ge\u00e7i\u015fi" },
+    el: { ferry:"\u0394\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7 \u03bc\u03b5 \u03c0\u03bb\u03bf\u03af\u03bf", tunnel:"\u0394\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7 \u03c3\u03ae\u03c1\u03b1\u03b3\u03b3\u03b1\u03c2", motorway:"\u0394\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7 \u03b1\u03c5\u03c4\u03bf\u03ba\u03b9\u03bd\u03b7\u03c4\u03cc\u03b4\u03c1\u03bf\u03bc\u03bf\u03c5", mainRoad:"\u0394\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7 \u03ba\u03cd\u03c1\u03b9\u03b1\u03c2 \u03bf\u03b4\u03bf\u03cd", mountain:"\u039f\u03c1\u03b5\u03b9\u03bd\u03ae \u03bf\u03b4\u03b9\u03ba\u03ae \u03b4\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7", coastal:"\u03a0\u03b1\u03c1\u03ac\u03ba\u03c4\u03b9\u03b1 \u03bf\u03b4\u03b9\u03ba\u03ae \u03b4\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7", external:"\u0395\u03be\u03c9\u03c4\u03b5\u03c1\u03b9\u03ba\u03ac \u03c3\u03cd\u03bd\u03bf\u03c1\u03b1 \u0395\u0395", freight:"\u039a\u03cd\u03c1\u03b9\u03b1 \u03bf\u03b4\u03cc\u03c2 \u03b5\u03bc\u03c0\u03bf\u03c1\u03b5\u03c5\u03bc\u03b1\u03c4\u03b9\u03ba\u03ce\u03bd \u03bc\u03b5\u03c4\u03b1\u03c6\u03bf\u03c1\u03ce\u03bd", footCar:"\u03a7\u03b5\u03c1\u03c3\u03b1\u03af\u03b1 \u03b4\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7, \u03bf\u03c7\u03ae\u03bc\u03b1\u03c4\u03b1 & \u03c0\u03b5\u03b6\u03bf\u03af" }
+  };
+
+  var UI = {
+    en: { title:"Crossing Times", tagline:"Live border wait reports from people actually at the crossing \u2014 European land borders where queues genuinely happen.", protoNote:"Reports currently save on this device only. Live syncing between everyone\u2019s reports is coming soon.", mapHead:"Border crossings map", mapHint:"tap a pin to report", legendNone:"No reports yet", legendLow:"Under 20 min", legendMid:"20\u201360 min", legendHigh:"Over 60 min", locateBtn:"Use my location", locating:"Locating\u2026", locationDenied:"Location permission denied \u2014 showing all crossings", locationError:"Couldn\u2019t get your location \u2014 showing all crossings", sortBusiest:"Busiest", sortNearest:"Nearest", closestBadge:"Closest", boardHead:"Current waits", crossingsCount:function(n){return n+" crossings";}, tickerHead:"Recent reports", tickerEmpty:"No reports yet on this device. Tap a crossing above and add the first one.", footerClear:"Clear demo data on this device", modalTitle:"Report a wait", labelCrossing:"Crossing", labelDirection:"Direction", labelWait:"Wait time (minutes)", minutesPlaceholder:"e.g. 45", labelVehicle:"Vehicle", vehicleCar:"Car", vehicleTruck:"Truck", vehicleBus:"Bus", vehicleFoot:"On foot", labelNote:"Note (optional)", notePlaceholder:"e.g. only one lane open", submitBtn:"Submit report", toastAdded:"Report added", toastCleared:"Demo data cleared", timeJustNow:"just now", timeMinAgo:function(m){return m+"m ago";}, timeHourAgo:function(h){return h+"h ago";}, timeDayAgo:function(d){return d+"d ago";}, noData:"no data", kmAway:function(km){return km+" km away";}, underKm:"under 1 km away", langLabel:"Language" },
+    de: { title:"Grenzzeiten", tagline:"Live-Wartezeiten an Grenz\u00fcberg\u00e4ngen, gemeldet von Menschen, die gerade dort sind \u2014 europ\u00e4ische Landgrenzen, an denen es wirklich Staus gibt.", protoNote:"Meldungen werden derzeit nur auf diesem Ger\u00e4t gespeichert. Der Live-Abgleich zwischen allen Nutzern kommt bald.", mapHead:"Karte der Grenz\u00fcberg\u00e4nge", mapHint:"Zum Melden auf eine Markierung tippen", legendNone:"Noch keine Meldungen", legendLow:"Unter 20 Min", legendMid:"20\u201360 Min", legendHigh:"\u00dcber 60 Min", locateBtn:"Meinen Standort verwenden", locating:"Standort wird ermittelt\u2026", locationDenied:"Standortzugriff verweigert \u2014 alle \u00dcberg\u00e4nge werden angezeigt", locationError:"Standort konnte nicht ermittelt werden \u2014 alle \u00dcberg\u00e4nge werden angezeigt", sortBusiest:"Meiste Wartezeit", sortNearest:"N\u00e4chstgelegen", closestBadge:"Am n\u00e4chsten", boardHead:"Aktuelle Wartezeiten", crossingsCount:function(n){return n+" \u00dcberg\u00e4nge";}, tickerHead:"Neueste Meldungen", tickerEmpty:"Noch keine Meldungen auf diesem Ger\u00e4t. Auf einen \u00dcbergang oben tippen und die erste Meldung hinzuf\u00fcgen.", footerClear:"Demo-Daten auf diesem Ger\u00e4t l\u00f6schen", modalTitle:"Wartezeit melden", labelCrossing:"\u00dcbergang", labelDirection:"Richtung", labelWait:"Wartezeit (Minuten)", minutesPlaceholder:"z. B. 45", labelVehicle:"Fahrzeug", vehicleCar:"Pkw", vehicleTruck:"Lkw", vehicleBus:"Bus", vehicleFoot:"Zu Fu\u00df", labelNote:"Notiz (optional)", notePlaceholder:"z. B. nur eine Spur ge\u00f6ffnet", submitBtn:"Meldung senden", toastAdded:"Meldung hinzugef\u00fcgt", toastCleared:"Demo-Daten gel\u00f6scht", timeJustNow:"gerade eben", timeMinAgo:function(m){return "vor "+m+" Min";}, timeHourAgo:function(h){return "vor "+h+" Std";}, timeDayAgo:function(d){return "vor "+d+" Tg";}, noData:"keine Daten", kmAway:function(km){return km+" km entfernt";}, underKm:"unter 1 km entfernt", langLabel:"Sprache" },
+    sr: { title:"Vreme \u010dekanja", tagline:"Prijave \u010dekanja na granicama uživo, od ljudi koji su trenutno tamo \u2014 evropske kopnene granice na kojima zaista ima gu\u017evi.", protoNote:"Prijave se trenutno \u010duvaju samo na ovom ure\u0111aju. Uskoro sti\u017ee sinhronizacija u\u017eivo izme\u0111u svih korisnika.", mapHead:"Mapa graninih prelaza".replace("Graninih","Grani\u010dnih"), mapHint:"Dodirnite oznaku za prijavu", legendNone:"Jo\u0161 nema prijava", legendLow:"Manje od 20 min", legendMid:"20\u201360 min", legendHigh:"Vi\u0161e od 60 min", locateBtn:"Koristi moju lokaciju", locating:"Odre\u0111ivanje lokacije\u2026", locationDenied:"Pristup lokaciji odbijen \u2014 prikazani su svi prelazi", locationError:"Nije mogu\u0107e odrediti lokaciju \u2014 prikazani su svi prelazi", sortBusiest:"Najve\u0107e gu\u017eve", sortNearest:"Najbli\u017ei", closestBadge:"Najbli\u017ei", boardHead:"Trenutna \u010dekanja", crossingsCount:function(n){return n+" prelaza";}, tickerHead:"Nedavne prijave", tickerEmpty:"Jo\u0161 nema prijava na ovom ure\u0111aju. Dodirnite prelaz iznad i dodajte prvu prijavu.", footerClear:"Obri\u0161i demo podatke na ovom ure\u0111aju", modalTitle:"Prijavi \u010dekanje", labelCrossing:"Prelaz", labelDirection:"Smer", labelWait:"Vreme \u010dekanja (minuti)", minutesPlaceholder:"npr. 45", labelVehicle:"Vozilo", vehicleCar:"Automobil", vehicleTruck:"Kamion", vehicleBus:"Autobus", vehicleFoot:"Pe\u0161ice", labelNote:"Napomena (opciono)", notePlaceholder:"npr. otvorena samo jedna traka", submitBtn:"Po\u0161alji prijavu", toastAdded:"Prijava dodata", toastCleared:"Demo podaci obrisani", timeJustNow:"upravo sada", timeMinAgo:function(m){return "pre "+m+" min";}, timeHourAgo:function(h){return "pre "+h+" h";}, timeDayAgo:function(d){return "pre "+d+" d";}, noData:"nema podataka", kmAway:function(km){return km+" km udaljeno";}, underKm:"manje od 1 km", langLabel:"Jezik" },
+    mk: { title:"\u0412\u0440\u0435\u043c\u0438\u045a\u0430 \u043d\u0430 \u0447\u0435\u043a\u0430\u045a\u0435", tagline:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438 \u0437\u0430 \u0447\u0435\u043a\u0430\u045a\u0435 \u043d\u0430 \u0433\u0440\u0430\u043d\u0438\u0446\u0430 \u0432\u043e \u0436\u0438\u0432\u043e, \u043e\u0434 \u043b\u0443\u0453\u0435 \u043a\u043e\u0438 \u0441\u0435 \u0442\u043e\u043a\u043c\u0443 \u0442\u0430\u043c\u0443 \u2014 \u0435\u0432\u0440\u043e\u043f\u0441\u043a\u0438 \u043a\u043e\u043f\u043d\u0435\u043d\u0438 \u0433\u0440\u0430\u043d\u0438\u0446\u0438 \u043a\u0430\u0434\u0435 \u0448\u0442\u043e \u043d\u0430\u0432\u0438\u0441\u0442\u0438\u043d\u0430 \u0438\u043c\u0430 \u0437\u0430\u0434\u0440\u0436\u0443\u0432\u0430\u045a\u0435.", protoNote:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438\u0442\u0435 \u043c\u043e\u043c\u0435\u043d\u0442\u0430\u043b\u043d\u043e \u0441\u0435 \u0447\u0443\u0432\u0430\u0430\u0442 \u0441\u0430\u043c\u043e \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434. \u0421\u0438\u043d\u0445\u0440\u043e\u043d\u0438\u0437\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u0432\u043e \u0436\u0438\u0432\u043e \u0441\u043e \u0441\u0438\u0442\u0435 \u043a\u043e\u0440\u0438\u0441\u043d\u0438\u0446\u0438 \u0434\u043e\u0430\u0453\u0430 \u043d\u0430\u0441\u043a\u043e\u0440\u043e.", mapHead:"\u041c\u0430\u043f\u0430 \u043d\u0430 \u0433\u0440\u0430\u043d\u0438\u0447\u043d\u0438 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", mapHint:"\u0414\u043e\u043f\u0440\u0435\u0442\u0435 \u043e\u0437\u043d\u0430\u043a\u0430 \u0437\u0430 \u0434\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438\u0442\u0435", legendNone:"\u0421\u0451 \u0443\u0448\u0442\u0435 \u043d\u0435\u043c\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438", legendLow:"\u041f\u043e\u0434 20 \u043c\u0438\u043d", legendMid:"20\u201360 \u043c\u0438\u043d", legendHigh:"\u041d\u0430\u0434 60 \u043c\u0438\u043d", locateBtn:"\u041a\u043e\u0440\u0438\u0441\u0442\u0438 \u0458\u0430 \u043c\u043e\u0458\u0430\u0442\u0430 \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430", locating:"\u0421\u0435 \u043b\u043e\u0446\u0438\u0440\u0430\u2026", locationDenied:"\u041f\u0440\u0438\u0441\u0442\u0430\u043f\u043e\u0442 \u0434\u043e \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u0435 \u043e\u0434\u0431\u0438\u0435\u043d \u2014 \u043f\u0440\u0438\u043a\u0430\u0436\u0430\u043d\u0438 \u0441\u0435 \u0441\u0438\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", locationError:"\u041d\u0435 \u043c\u043e\u0436\u0435\u0448\u0435 \u0434\u0430 \u0441\u0435 \u043e\u0434\u0440\u0435\u0434\u0438 \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u2014 \u043f\u0440\u0438\u043a\u0430\u0436\u0430\u043d\u0438 \u0441\u0435 \u0441\u0438\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", sortBusiest:"\u041d\u0430\u0458\u0437\u0430\u0444\u0430\u0442\u0435\u043d\u0438", sortNearest:"\u041d\u0430\u0458\u0431\u043b\u0438\u0441\u043a\u0438", closestBadge:"\u041d\u0430\u0458\u0431\u043b\u0438\u0441\u043a\u0443", boardHead:"\u0422\u0435\u043a\u043e\u0432\u043d\u0438 \u0447\u0435\u043a\u0430\u045a\u0430", crossingsCount:function(n){return n+" \u043f\u0440\u0435\u043c\u0438\u043d\u0438";}, tickerHead:"\u041d\u0435\u043e\u0434\u0430\u043c\u043d\u0435\u0448\u043d\u0438 \u043f\u0440\u0438\u0458\u0430\u0432\u0438", tickerEmpty:"\u0421\u0451 \u0443\u0448\u0442\u0435 \u043d\u0435\u043c\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438 \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434. \u0414\u043e\u043f\u0440\u0435\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d \u043f\u043e\u0433\u043e\u0440\u0435 \u0438 \u0434\u043e\u0434\u0430\u0434\u0435\u0442\u0435 \u0458\u0430 \u043f\u0440\u0432\u0430\u0442\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0430.", footerClear:"\u0418\u0437\u0431\u0440\u0438\u0448\u0438 \u0434\u0435\u043c\u043e \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438 \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434", modalTitle:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438 \u0447\u0435\u043a\u0430\u045a\u0435", labelCrossing:"\u041f\u0440\u0435\u043c\u0438\u043d", labelDirection:"\u041d\u0430\u0441\u043e\u043a\u0430", labelWait:"\u0412\u0440\u0435\u043c\u0435 \u043d\u0430 \u0447\u0435\u043a\u0430\u045a\u0435 (\u043c\u0438\u043d\u0443\u0442\u0438)", minutesPlaceholder:"\u043d\u0430 \u043f\u0440. 45", labelVehicle:"\u0412\u043e\u0437\u0438\u043b\u043e", vehicleCar:"\u0410\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b", vehicleTruck:"\u041a\u0430\u043c\u0438\u043e\u043d", vehicleBus:"\u0410\u0432\u0442\u043e\u0431\u0443\u0441", vehicleFoot:"\u041f\u0435\u0448\u043a\u0438", labelNote:"\u0411\u0435\u043b\u0435\u0448\u043a\u0430 (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u043d\u043e)", notePlaceholder:"\u043d\u0430 \u043f\u0440. \u043e\u0442\u0432\u043e\u0440\u0435\u043d\u0430 \u0441\u0430\u043c\u043e \u0435\u0434\u043d\u0430 \u043b\u0435\u043d\u0442\u0430", submitBtn:"\u0418\u0441\u043f\u0440\u0430\u0442\u0438 \u043f\u0440\u0438\u0458\u0430\u0432\u0430", toastAdded:"\u041f\u0440\u0438\u0458\u0430\u0432\u0430\u0442\u0430 \u0435 \u0434\u043e\u0434\u0430\u0434\u0435\u043d\u0430", toastCleared:"\u0414\u0435\u043c\u043e \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438\u0442\u0435 \u0441\u0435 \u0438\u0437\u0431\u0440\u0438\u0448\u0430\u043d\u0438", timeJustNow:"\u0442\u043e\u043a\u043c\u0443 \u0441\u0435\u0433\u0430", timeMinAgo:function(m){return "\u043f\u0440\u0435\u0434 "+m+" \u043c\u0438\u043d";}, timeHourAgo:function(h){return "\u043f\u0440\u0435\u0434 "+h+" \u0447";}, timeDayAgo:function(d){return "\u043f\u0440\u0435\u0434 "+d+" \u0434";}, noData:"\u043d\u0435\u043c\u0430 \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438", kmAway:function(km){return km+" \u043a\u043c \u043e\u0434\u0434\u0430\u043b\u0435\u0447\u0435\u043d\u043e\u0441\u0442";}, underKm:"\u043f\u043e\u043c\u0430\u043b\u043a\u0443 \u043e\u0434 1 \u043a\u043c", langLabel:"\u0408\u0430\u0437\u0438\u043a" },
+    tr: { title:"Ge\u00e7i\u015f S\u00fcreleri", tagline:"S\u0131n\u0131rda ger\u00e7ekten bulunan ki\u015filerden canl\u0131 bekleme s\u00fcresi bildirimleri \u2014 ger\u00e7ekten kuyruk olan Avrupa kara s\u0131n\u0131rlar\u0131.", protoNote:"Bildirimler \u015fu anda yaln\u0131zca bu cihazda kaydediliyor. T\u00fcm kullan\u0131c\u0131lar aras\u0131nda canl\u0131 senkronizasyon yak\u0131nda geliyor.", mapHead:"S\u0131n\u0131r kap\u0131lar\u0131 haritas\u0131", mapHint:"Bildirmek i\u00e7in bir i\u015farete dokunun", legendNone:"Hen\u00fcz bildirim yok", legendLow:"20 dakikadan az", legendMid:"20\u201360 dakika", legendHigh:"60 dakikadan fazla", locateBtn:"Konumumu kullan", locating:"Konum belirleniyor\u2026", locationDenied:"Konum izni reddedildi \u2014 t\u00fcm ge\u00e7i\u015fler g\u00f6steriliyor", locationError:"Konum al\u0131namad\u0131 \u2014 t\u00fcm ge\u00e7i\u015fler g\u00f6steriliyor", sortBusiest:"En yo\u011fun", sortNearest:"En yak\u0131n", closestBadge:"En yak\u0131n", boardHead:"G\u00fcncel bekleme s\u00fcreleri", crossingsCount:function(n){return n+" ge\u00e7i\u015f";}, tickerHead:"Son bildirimler", tickerEmpty:"Bu cihazda hen\u00fcz bildirim yok. Yukar\u0131dan bir ge\u00e7i\u015fe dokunun ve ilk bildirimi ekleyin.", footerClear:"Bu cihazdaki demo verilerini temizle", modalTitle:"Bekleme s\u00fcresi bildir", labelCrossing:"S\u0131n\u0131r kap\u0131s\u0131", labelDirection:"Y\u00f6n", labelWait:"Bekleme s\u00fcresi (dakika)", minutesPlaceholder:"\u00f6rn. 45", labelVehicle:"Ara\u00e7", vehicleCar:"Otomobil", vehicleTruck:"Kamyon", vehicleBus:"Otob\u00fcs", vehicleFoot:"Yaya", labelNote:"Not (iste\u011fe ba\u011fl\u0131)", notePlaceholder:"\u00f6rn. sadece bir \u015ferit a\u00e7\u0131k", submitBtn:"Bildirimi g\u00f6nder", toastAdded:"Bildirim eklendi", toastCleared:"Demo verileri temizlendi", timeJustNow:"az \u00f6nce", timeMinAgo:function(m){return m+" dk \u00f6nce";}, timeHourAgo:function(h){return h+" sa \u00f6nce";}, timeDayAgo:function(d){return d+" g\u00fcn \u00f6nce";}, noData:"veri yok", kmAway:function(km){return km+" km uzakta";}, underKm:"1 km\u2019den az", langLabel:"Dil" },
+    el: { title:"\u03a7\u03c1\u03cc\u03bd\u03bf\u03b9 \u0394\u03b9\u03ad\u03bb\u03b5\u03c5\u03c3\u03b7\u03c2", tagline:"Live \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2 \u03c3\u03c4\u03b1 \u03c3\u03cd\u03bd\u03bf\u03c1\u03b1 \u03b1\u03c0\u03cc \u03b1\u03bd\u03b8\u03c1\u03ce\u03c0\u03bf\u03c5\u03c2 \u03c0\u03bf\u03c5 \u03b2\u03c1\u03af\u03c3\u03ba\u03bf\u03bd\u03c4\u03b1\u03b9 \u03b5\u03ba\u03b5\u03af \u2014 \u03b5\u03c5\u03c1\u03c9\u03c0\u03b1\u03ca\u03ba\u03ac \u03c7\u03b5\u03c1\u03c3\u03b1\u03af\u03b1 \u03c3\u03cd\u03bd\u03bf\u03c1\u03b1 \u03cc\u03c0\u03bf\u03c5 \u03cc\u03bd\u03c4\u03c9\u03c2 \u03c5\u03c0\u03ac\u03c1\u03c7\u03bf\u03c5\u03bd \u03bf\u03c5\u03c1\u03ad\u03c2.", protoNote:"\u039f\u03b9 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03b1\u03c0\u03bf\u03b8\u03b7\u03ba\u03b5\u03cd\u03bf\u03bd\u03c4\u03b1\u03b9 \u03c0\u03c1\u03bf\u03c2 \u03c4\u03bf \u03c0\u03b1\u03c1\u03cc\u03bd \u03bc\u03cc\u03bd\u03bf \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae. \u039f \u03c3\u03c5\u03b3\u03c7\u03c1\u03bf\u03bd\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c3\u03b5 \u03c0\u03c1\u03b1\u03b3\u03bc\u03b1\u03c4\u03b9\u03ba\u03cc \u03c7\u03c1\u03cc\u03bd\u03bf \u03bc\u03b5\u03c4\u03b1\u03be\u03cd \u03cc\u03bb\u03c9\u03bd \u03c4\u03c9\u03bd \u03c7\u03c1\u03b7\u03c3\u03c4\u03ce\u03bd \u03ad\u03c1\u03c7\u03b5\u03c4\u03b1\u03b9 \u03c3\u03cd\u03bd\u03c4\u03bf\u03bc\u03b1.", mapHead:"\u03a7\u03ac\u03c1\u03c4\u03b7\u03c2 \u03c3\u03c5\u03bd\u03bf\u03c1\u03b9\u03b1\u03ba\u03ce\u03bd \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03c9\u03bd", mapHint:"\u03a0\u03b1\u03c4\u03ae\u03c3\u03c4\u03b5 \u03bc\u03b9\u03b1 \u03ba\u03b1\u03c1\u03c6\u03af\u03c4\u03c3\u03b1 \u03b3\u03b9\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac", legendNone:"\u039a\u03b1\u03bc\u03af\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03b1\u03ba\u03cc\u03bc\u03b1", legendLow:"\u039a\u03ac\u03c4\u03c9 \u03b1\u03c0\u03cc 20 \u03bb\u03b5\u03c0\u03c4\u03ac", legendMid:"20\u201360 \u03bb\u03b5\u03c0\u03c4\u03ac", legendHigh:"\u03a0\u03ac\u03bd\u03c9 \u03b1\u03c0\u03cc 60 \u03bb\u03b5\u03c0\u03c4\u03ac", locateBtn:"\u03a7\u03c1\u03ae\u03c3\u03b7 \u03c4\u03b7\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2 \u03bc\u03bf\u03c5", locating:"\u0395\u03bd\u03c4\u03bf\u03c0\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2\u2026", locationDenied:"\u0397 \u03c0\u03c1\u03cc\u03c3\u03b2\u03b1\u03c3\u03b7 \u03c3\u03c4\u03b7\u03bd \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1 \u03b1\u03c0\u03bf\u03c1\u03c1\u03af\u03c6\u03b8\u03b7\u03ba\u03b5 \u2014 \u03b5\u03bc\u03c6\u03b1\u03bd\u03af\u03b6\u03bf\u03bd\u03c4\u03b1\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2", locationError:"\u0394\u03b5\u03bd \u03ae\u03c4\u03b1\u03bd \u03b4\u03c5\u03bd\u03b1\u03c4\u03cc\u03c2 \u03bf \u03b5\u03bd\u03c4\u03bf\u03c0\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c4\u03b7\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2 \u2014 \u03b5\u03bc\u03c6\u03b1\u03bd\u03af\u03b6\u03bf\u03bd\u03c4\u03b1\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2", sortBusiest:"\u03a0\u03b9\u03bf \u03c0\u03bf\u03bb\u03c5\u03c3\u03cd\u03c7\u03bd\u03b1\u03c3\u03c4\u03b5\u03c2", sortNearest:"\u03a0\u03bb\u03b7\u03c3\u03b9\u03ad\u03c3\u03c4\u03b5\u03c1\u03b5\u03c2", closestBadge:"\u03a0\u03bb\u03b7\u03c3\u03b9\u03ad\u03c3\u03c4\u03b5\u03c1\u03b7", boardHead:"\u03a4\u03c1\u03ad\u03c7\u03bf\u03bd\u03c4\u03b5\u03c2 \u03c7\u03c1\u03cc\u03bd\u03bf\u03b9 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2", crossingsCount:function(n){return n+" \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2";}, tickerHead:"\u03a0\u03c1\u03cc\u03c3\u03c6\u03b1\u03c4\u03b5\u03c2 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2", tickerEmpty:"\u0394\u03b5\u03bd \u03c5\u03c0\u03ac\u03c1\u03c7\u03bf\u03c5\u03bd \u03b1\u03ba\u03cc\u03bc\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae. \u03a0\u03b1\u03c4\u03ae\u03c3\u03c4\u03b5 \u03bc\u03b9\u03b1 \u03b4\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7 \u03c0\u03b1\u03c1\u03b1\u03c0\u03ac\u03bd\u03c9 \u03ba\u03b1\u03b9 \u03c0\u03c1\u03bf\u03c3\u03b8\u03ad\u03c3\u03c4\u03b5 \u03c4\u03b7\u03bd \u03c0\u03c1\u03ce\u03c4\u03b7 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac.", footerClear:"\u0394\u03b9\u03b1\u03b3\u03c1\u03b1\u03c6\u03ae \u03b4\u03bf\u03ba\u03b9\u03bc\u03b1\u03c3\u03c4\u03b9\u03ba\u03ce\u03bd \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03c9\u03bd \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae", modalTitle:"\u0391\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03c7\u03c1\u03cc\u03bd\u03bf\u03c5 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2", labelCrossing:"\u0394\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7", labelDirection:"\u039a\u03b1\u03c4\u03b5\u03cd\u03b8\u03c5\u03bd\u03c3\u03b7", labelWait:"\u03a7\u03c1\u03cc\u03bd\u03bf\u03c2 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2 (\u03bb\u03b5\u03c0\u03c4\u03ac)", minutesPlaceholder:"\u03c0.\u03c7. 45", labelVehicle:"\u038c\u03c7\u03b7\u03bc\u03b1", vehicleCar:"\u0391\u03c5\u03c4\u03bf\u03ba\u03af\u03bd\u03b7\u03c4\u03bf", vehicleTruck:"\u03a6\u03bf\u03c1\u03c4\u03b7\u03b3\u03cc", vehicleBus:"\u039b\u03b5\u03c9\u03c6\u03bf\u03c1\u03b5\u03af\u03bf", vehicleFoot:"\u03a0\u03b5\u03b6\u03cc\u03c2", labelNote:"\u03a3\u03b7\u03bc\u03b5\u03af\u03c9\u03c3\u03b7 (\u03c0\u03c1\u03bf\u03b1\u03b9\u03c1\u03b5\u03c4\u03b9\u03ba\u03cc)", notePlaceholder:"\u03c0.\u03c7. \u03bc\u03cc\u03bd\u03bf \u03bc\u03af\u03b1 \u03bb\u03c9\u03c1\u03af\u03b4\u03b1 \u03b1\u03bd\u03bf\u03b9\u03c7\u03c4\u03ae", submitBtn:"\u03a5\u03c0\u03bf\u03b2\u03bf\u03bb\u03ae \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac\u03c2", toastAdded:"\u0397 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03c0\u03c1\u03bf\u03c3\u03c4\u03ad\u03b8\u03b7\u03ba\u03b5", toastCleared:"\u03a4\u03b1 \u03b4\u03bf\u03ba\u03b9\u03bc\u03b1\u03c3\u03c4\u03b9\u03ba\u03ac \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03b1 \u03b4\u03b9\u03b1\u03b3\u03c1\u03ac\u03c6\u03b7\u03ba\u03b1\u03bd", timeJustNow:"\u03bc\u03cc\u03bb\u03b9\u03c2 \u03c4\u03ce\u03c1\u03b1", timeMinAgo:function(m){return "\u03c0\u03c1\u03b9\u03bd "+m+" \u03bb";}, timeHourAgo:function(h){return "\u03c0\u03c1\u03b9\u03bd "+h+" \u03ce";}, timeDayAgo:function(d){return "\u03c0\u03c1\u03b9\u03bd "+d+" \u03b7";}, noData:"\u03c7\u03c9\u03c1\u03af\u03c2 \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03b1", kmAway:function(km){return km+" \u03c7\u03bb\u03bc \u03bc\u03b1\u03ba\u03c1\u03b9\u03ac";}, underKm:"\u03bb\u03b9\u03b3\u03cc\u03c4\u03b5\u03c1\u03bf \u03b1\u03c0\u03cc 1 \u03c7\u03bb\u03bc", langLabel:"\u0393\u03bb\u03ce\u03c3\u03c3\u03b1" }
+  };
+  var LANG_NAMES = { en:"English", de:"Deutsch", sr:"Srpski", mk:"\u041c\u0430\u043a\u0435\u0434\u043e\u043d\u0441\u043a\u0438", tr:"T\u00fcrk\u00e7e", el:"\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac" };
+
+  var currentLang = "en";
+  try {
+    var savedLang = localStorage.getItem("borderwait_lang_v1");
+    if (savedLang && UI[savedLang]) currentLang = savedLang;
+  } catch (e) {}
+
+  function t(key) { var v = (UI[currentLang] || UI.en)[key]; return v === undefined ? UI.en[key] : v; }
+  function countryName(code) { return (COUNTRIES[currentLang] || COUNTRIES.en)[code] || code; }
+  function routeText(c) { return (ROUTE_TYPES[currentLang] || ROUTE_TYPES.en)[c.type] || ""; }
+
+  /* ---------------- State & storage ---------------- */
   var STORE_KEY = "borderwait_reports_v1";
   var FOUR_HOURS = 4 * 60 * 60 * 1000;
+  var sortMode = "wait";
+  var userLoc = null;
 
   function loadReports() {
-    try {
-      var raw = localStorage.getItem(STORE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch (e) { return []; }
+    try { var raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { return []; }
   }
-  function saveReports(list) {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) {}
-  }
+  function saveReports(list) { try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) {} }
   var reports = loadReports();
 
   function avgWait(crossingId) {
     var now = Date.now();
-    var relevant = reports.filter(function (r) {
-      return r.crossingId === crossingId && (now - r.ts) < FOUR_HOURS;
-    });
+    var relevant = reports.filter(function (r) { return r.crossingId === crossingId && (now - r.ts) < FOUR_HOURS; });
     if (!relevant.length) return null;
     var sum = relevant.reduce(function (s, r) { return s + r.minutes; }, 0);
     return { minutes: Math.round(sum / relevant.length), latest: Math.max.apply(null, relevant.map(function (r) { return r.ts; })), count: relevant.length };
   }
-  function bucket(min) {
-    if (min === null) return "none";
-    if (min < 20) return "low";
-    if (min < 60) return "mid";
-    return "high";
-  }
+  function bucket(min) { if (min === null) return "none"; if (min < 20) return "low"; if (min < 60) return "mid"; return "high"; }
   function relTime(ts) {
     var diff = Math.max(0, Date.now() - ts);
     var m = Math.round(diff / 60000);
-    if (m < 1) return "just now";
-    if (m < 60) return m + "m ago";
+    if (m < 1) return t("timeJustNow");
+    if (m < 60) return t("timeMinAgo")(m);
     var h = Math.round(m / 60);
-    if (h < 24) return h + "h ago";
-    return Math.round(h / 24) + "d ago";
+    if (h < 24) return t("timeHourAgo")(h);
+    return t("timeDayAgo")(Math.round(h / 24));
+  }
+  function haversineKm(lat1, lon1, lat2, lon2) {
+    var R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+  function distanceTo(c) {
+    if (!userLoc) return null;
+    return haversineKm(userLoc.lat, userLoc.lng, c.lat, c.lng);
+  }
+  function distanceText(km) {
+    if (km < 1) return t("underKm");
+    return t("kmAway")(Math.round(km));
   }
 
+  /* ---------------- DOM refs ---------------- */
   var mapbox = document.getElementById("mapbox");
   var boardRows = document.getElementById("board-rows");
   var boardCount = document.getElementById("board-count");
@@ -427,34 +355,35 @@
   var vehicleSeg = document.getElementById("vehicle-seg");
   var overlay = document.getElementById("overlay");
   var modalRoute = document.getElementById("modal-route");
-  var modalTitle = document.getElementById("modal-title");
   var minutesInput = document.getElementById("minutes-input");
   var noteInput = document.getElementById("note-input");
   var toast = document.getElementById("toast");
+  var langSelect = document.getElementById("lang-select");
+  var sortToggle = document.getElementById("sort-toggle");
+  var locateBtn = document.getElementById("locate-btn");
+  var locateStatus = document.getElementById("locate-status");
 
   var selectedVehicle = "car";
   var selectedDirection = 0;
 
+  /* ---------------- Leaflet map ---------------- */
   var leafletMap = null;
   var leafletMarkers = {};
+  var userMarker = null;
 
   function iconFor(min) {
-    return L.divIcon({
-      className: "",
-      html: '<div class="crossing-marker wait-' + bucket(min) + '"></div>',
-      iconSize: [18, 18],
-      iconAnchor: [9, 9],
-      popupAnchor: [0, -10]
-    });
+    return L.divIcon({ className: "", html: '<div class="crossing-marker wait-' + bucket(min) + '"></div>', iconSize: [18, 18], iconAnchor: [9, 9], popupAnchor: [0, -10] });
   }
-
+  function userIcon() {
+    return L.divIcon({ className: "", html: '<div class="user-marker-dot"></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
+  }
+  function popupHtml(c, avg) {
+    var waitText = avg ? avg.minutes + " min avg (" + avg.count + ")" : t("legendNone");
+    return "<b>" + c.name + "</b><br>" + countryName(c.a) + " \u2194 " + countryName(c.b) + "<br><span style=\"color:var(--text-dim)\">" + waitText + "</span>";
+  }
   function initMap() {
-    leafletMap = L.map("mapbox", { scrollWheelZoom: false }).setView([50, 15], 4);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 18
-    }).addTo(leafletMap);
-
+    leafletMap = L.map("mapbox", { scrollWheelZoom: false }).setView([46, 20], 4);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 18 }).addTo(leafletMap);
     CROSSINGS.forEach(function (c) {
       var marker = L.marker([c.lat, c.lng], { icon: iconFor(null) }).addTo(leafletMap);
       marker.bindPopup(popupHtml(c, null));
@@ -462,14 +391,8 @@
       leafletMarkers[c.id] = marker;
     });
   }
-
-  function popupHtml(c, avg) {
-    var waitText = avg ? avg.minutes + " min avg (" + avg.count + " report" + (avg.count === 1 ? "" : "s") + ")" : "No reports yet";
-    return '<b>' + c.name + '</b><br>' + c.a + ' \u2194 ' + c.b + '<br><span style="color:var(--text-dim)">' + waitText + '</span>';
-  }
-
   function buildMap() {
-    if (!leafletMap) { initMap(); }
+    if (!leafletMap) initMap();
     CROSSINGS.forEach(function (c) {
       var avg = avgWait(c.id);
       var marker = leafletMarkers[c.id];
@@ -478,158 +401,197 @@
     });
   }
 
+  /* ---------------- Board & ticker ---------------- */
   function buildBoard() {
-    var withAvg = CROSSINGS.map(function (c) { return { c: c, avg: avgWait(c.id) }; });
-    withAvg.sort(function (p, q) {
-      var av = p.avg ? p.avg.minutes : -1;
-      var bv = q.avg ? q.avg.minutes : -1;
-      return bv - av;
-    });
+    var rows = CROSSINGS.map(function (c) { return { c: c, avg: avgWait(c.id), dist: distanceTo(c) }; });
+    if (sortMode === "distance" && userLoc) {
+      rows.sort(function (p, q) { return p.dist - q.dist; });
+    } else {
+      rows.sort(function (p, q) { var av = p.avg ? p.avg.minutes : -1, bv = q.avg ? q.avg.minutes : -1; return bv - av; });
+    }
     boardRows.innerHTML = "";
-    boardCount.textContent = CROSSINGS.length + " crossings";
-    withAvg.forEach(function (p) {
+    boardCount.textContent = t("crossingsCount")(CROSSINGS.length);
+    rows.forEach(function (p, idx) {
       var row = document.createElement("button");
       row.className = "row";
       row.addEventListener("click", function () { openModal(p.c.id); });
       var waitClass = p.avg ? "" : "none";
-      var waitText = p.avg ? p.avg.minutes + "m" : "\u2014";
+      var waitTextVal = p.avg ? p.avg.minutes + "m" : "\u2014";
+      var closest = (sortMode === "distance" && userLoc && idx === 0) ? ' <span class="badge-closest">' + t("closestBadge") + "</span>" : "";
+      var distLine = (userLoc && p.dist !== null) ? '<div class="row-distance">' + distanceText(p.dist) + "</div>" : "";
       row.innerHTML =
-        '<div><div class="row-name">' + p.c.name + '</div><div class="row-route">' + p.c.a + ' \u2194 ' + p.c.b + '</div></div>' +
-        '<div class="row-wait ' + waitClass + '">' + waitText + '</div>' +
-        '<div class="row-updated">' + (p.avg ? relTime(p.avg.latest) : "no data") + '</div>';
+        '<div><div class="row-name">' + p.c.name + closest + '</div><div class="row-route">' + countryName(p.c.a) + " \u2194 " + countryName(p.c.b) + "</div>" + distLine + "</div>" +
+        '<div class="row-wait ' + waitClass + '">' + waitTextVal + "</div>" +
+        '<div class="row-updated">' + (p.avg ? relTime(p.avg.latest) : t("noData")) + "</div>";
       boardRows.appendChild(row);
     });
   }
-
   function buildTicker() {
     var recent = reports.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, 12);
-    if (!recent.length) {
-      ticker.innerHTML = '<div class="empty">No reports yet on this device. Tap a crossing above and add the first one.</div>';
-      return;
-    }
+    if (!recent.length) { ticker.innerHTML = '<div class="empty">' + t("tickerEmpty") + "</div>"; return; }
     ticker.innerHTML = "";
     recent.forEach(function (r) {
       var c = CROSSINGS.find(function (x) { return x.id === r.crossingId; });
       if (!c) return;
+      var vehicleLabel = { car: t("vehicleCar"), truck: t("vehicleTruck"), bus: t("vehicleBus"), foot: t("vehicleFoot") }[r.vehicle] || r.vehicle;
+      var dirText = r.direction === 0 ? (countryName(c.a) + " \u2192 " + countryName(c.b)) : (countryName(c.b) + " \u2192 " + countryName(c.a));
       var item = document.createElement("div");
       item.className = "ticker-item";
-      var dirText = r.direction === 0 ? (c.a + " \u2192 " + c.b) : (c.b + " \u2192 " + c.a);
       item.innerHTML =
         '<div class="ticker-dot wait-' + bucket(r.minutes) + '"></div>' +
-        '<div class="ticker-text"><b>' + c.name + '</b> \u2014 ' + r.minutes + ' min, ' + r.vehicle + ', ' + dirText +
-        (r.note ? ' <span style="color:var(--text-faint)">\u201c' + escapeHtml(r.note) + '\u201d</span>' : '') +
-        '<div class="ticker-time">' + relTime(r.ts) + '</div></div>';
+        '<div class="ticker-text"><b>' + c.name + "</b> \u2014 " + r.minutes + " min, " + vehicleLabel + ", " + dirText +
+        (r.note ? ' <span style="color:var(--text-faint)">\u201c' + escapeHtml(r.note) + '\u201d</span>' : "") +
+        '<div class="ticker-time">' + relTime(r.ts) + "</div></div>";
       ticker.appendChild(item);
     });
   }
+  function escapeHtml(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
-  function escapeHtml(s) {
-    var d = document.createElement("div");
-    d.textContent = s;
-    return d.innerHTML;
-  }
+  function renderAll() { buildMap(); buildBoard(); buildTicker(); }
 
-  function renderAll() {
-    buildMap();
-    buildBoard();
-    buildTicker();
-  }
-
+  /* ---------------- Modal ---------------- */
   function populateCrossingSelect(selectedId) {
     crossingSelect.innerHTML = "";
     CROSSINGS.forEach(function (c) {
       var opt = document.createElement("option");
-      opt.value = c.id;
-      opt.textContent = c.name;
+      opt.value = c.id; opt.textContent = c.name;
       if (c.id === selectedId) opt.selected = true;
       crossingSelect.appendChild(opt);
     });
   }
-
   function updateDirectionSeg(crossingId) {
     var c = CROSSINGS.find(function (x) { return x.id === crossingId; });
     directionSeg.innerHTML = "";
     [0, 1].forEach(function (dir) {
       var btn = document.createElement("button");
-      btn.textContent = dir === 0 ? (c.a + " \u2192 " + c.b) : (c.b + " \u2192 " + c.a);
+      btn.type = "button";
+      btn.textContent = dir === 0 ? (countryName(c.a) + " \u2192 " + countryName(c.b)) : (countryName(c.b) + " \u2192 " + countryName(c.a));
       if (dir === selectedDirection) btn.className = "active";
-      btn.addEventListener("click", function () {
-        selectedDirection = dir;
-        updateDirectionSeg(crossingId);
-      });
+      btn.addEventListener("click", function () { selectedDirection = dir; updateDirectionSeg(crossingId); });
       directionSeg.appendChild(btn);
     });
   }
-
-  function openModal(crossingId) {
-    selectedDirection = 0;
-    selectedVehicle = "car";
-    Array.prototype.forEach.call(vehicleSeg.children, function (b) {
-      b.classList.toggle("active", b.dataset.v === "car");
+  function buildVehicleSeg() {
+    vehicleSeg.innerHTML = "";
+    [["car", t("vehicleCar")], ["truck", t("vehicleTruck")], ["bus", t("vehicleBus")], ["foot", t("vehicleFoot")]].forEach(function (pair) {
+      var btn = document.createElement("button");
+      btn.type = "button"; btn.dataset.v = pair[0]; btn.textContent = pair[1];
+      if (pair[0] === selectedVehicle) btn.className = "active";
+      btn.addEventListener("click", function () {
+        selectedVehicle = pair[0];
+        Array.prototype.forEach.call(vehicleSeg.children, function (b) { b.classList.toggle("active", b === btn); });
+      });
+      vehicleSeg.appendChild(btn);
     });
+  }
+  function openModal(crossingId) {
+    selectedDirection = 0; selectedVehicle = "car";
     populateCrossingSelect(crossingId);
     var c = CROSSINGS.find(function (x) { return x.id === crossingId; });
-    modalRoute.textContent = c.route;
+    modalRoute.textContent = routeText(c);
     updateDirectionSeg(crossingId);
-    minutesInput.value = "";
-    noteInput.value = "";
+    buildVehicleSeg();
+    minutesInput.value = ""; minutesInput.placeholder = t("minutesPlaceholder");
+    noteInput.value = ""; noteInput.placeholder = t("notePlaceholder");
     overlay.classList.add("open");
     setTimeout(function () { minutesInput.focus(); }, 50);
   }
   function closeModal() { overlay.classList.remove("open"); }
-
   document.getElementById("close-modal").addEventListener("click", closeModal);
   overlay.addEventListener("click", function (e) { if (e.target === overlay) closeModal(); });
   crossingSelect.addEventListener("change", function () {
     selectedDirection = 0;
     updateDirectionSeg(crossingSelect.value);
     var c = CROSSINGS.find(function (x) { return x.id === crossingSelect.value; });
-    modalRoute.textContent = c.route;
-  });
-  vehicleSeg.addEventListener("click", function (e) {
-    var btn = e.target.closest("button");
-    if (!btn) return;
-    selectedVehicle = btn.dataset.v;
-    Array.prototype.forEach.call(vehicleSeg.children, function (b) { b.classList.toggle("active", b === btn); });
+    modalRoute.textContent = routeText(c);
   });
 
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add("show");
-    setTimeout(function () { toast.classList.remove("show"); }, 1800);
-  }
+  function showToast(msg) { toast.textContent = msg; toast.classList.add("show"); setTimeout(function () { toast.classList.remove("show"); }, 1800); }
 
   document.getElementById("submit-report").addEventListener("click", function () {
     var minutes = parseInt(minutesInput.value, 10);
     if (isNaN(minutes) || minutes < 0) {
-      minutesInput.focus();
-      minutesInput.style.outline = "2px solid var(--red)";
+      minutesInput.focus(); minutesInput.style.outline = "2px solid var(--red)";
       setTimeout(function () { minutesInput.style.outline = ""; }, 900);
       return;
     }
-    var report = {
-      id: "r" + Date.now() + Math.random().toString(36).slice(2, 7),
-      crossingId: crossingSelect.value,
-      minutes: minutes,
-      direction: selectedDirection,
-      vehicle: selectedVehicle,
-      note: noteInput.value.trim().slice(0, 80),
-      ts: Date.now()
-    };
-    reports.push(report);
+    reports.push({ id: "r" + Date.now() + Math.random().toString(36).slice(2, 7), crossingId: crossingSelect.value, minutes: minutes, direction: selectedDirection, vehicle: selectedVehicle, note: noteInput.value.trim().slice(0, 80), ts: Date.now() });
     saveReports(reports);
-    closeModal();
-    renderAll();
-    showToast("Report added");
+    closeModal(); renderAll(); showToast(t("toastAdded"));
   });
-
   document.getElementById("clear-data").addEventListener("click", function () {
-    reports = [];
-    saveReports(reports);
-    renderAll();
-    showToast("Demo data cleared");
+    reports = []; saveReports(reports); renderAll(); showToast(t("toastCleared"));
   });
 
+  /* ---------------- Geolocation ---------------- */
+  function locate() {
+    if (!("geolocation" in navigator)) { locateStatus.textContent = t("locationError"); return; }
+    locateBtn.disabled = true;
+    locateStatus.textContent = t("locating");
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      locateBtn.disabled = false;
+      locateStatus.textContent = "";
+      sortMode = "distance";
+      updateSortToggle();
+      if (leafletMap) {
+        if (userMarker) leafletMap.removeLayer(userMarker);
+        userMarker = L.marker([userLoc.lat, userLoc.lng], { icon: userIcon(), zIndexOffset: 1000 }).addTo(leafletMap);
+        leafletMap.setView([userLoc.lat, userLoc.lng], 7);
+      }
+      renderAll();
+    }, function (err) {
+      locateBtn.disabled = false;
+      locateStatus.textContent = (err && err.code === 1) ? t("locationDenied") : t("locationError");
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+  }
+  locateBtn.addEventListener("click", locate);
+
+  function updateSortToggle() {
+    Array.prototype.forEach.call(sortToggle.children, function (b) { b.classList.toggle("active", b.dataset.mode === sortMode); });
+  }
+  sortToggle.addEventListener("click", function (e) {
+    var btn = e.target.closest("button");
+    if (!btn) return;
+    if (btn.dataset.mode === "distance" && !userLoc) { locate(); return; }
+    sortMode = btn.dataset.mode;
+    updateSortToggle();
+    buildBoard();
+  });
+
+  /* ---------------- i18n wiring ---------------- */
+  function applyStaticTranslations() {
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n");
+      var val = t(key);
+      if (typeof val === "string") el.textContent = val;
+    });
+    document.getElementById("html-root").lang = currentLang;
+    minutesInput.placeholder = t("minutesPlaceholder");
+    noteInput.placeholder = t("notePlaceholder");
+    updateSortToggle();
+  }
+  function populateLangSelect() {
+    langSelect.innerHTML = "";
+    Object.keys(UI).forEach(function (code) {
+      var opt = document.createElement("option");
+      opt.value = code; opt.textContent = LANG_NAMES[code] || code;
+      if (code === currentLang) opt.selected = true;
+      langSelect.appendChild(opt);
+    });
+  }
+  langSelect.addEventListener("change", function () {
+    currentLang = langSelect.value;
+    try { localStorage.setItem("borderwait_lang_v1", currentLang); } catch (e) {}
+    applyStaticTranslations();
+    renderAll();
+  });
+
+  window.addEventListener("resize", function () { if (leafletMap) leafletMap.invalidateSize(); });
+
+  /* ---------------- Init ---------------- */
+  populateLangSelect();
+  applyStaticTranslations();
   renderAll();
 
   if ("serviceWorker" in navigator) {
