@@ -7,104 +7,159 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<meta name="theme-color" content="#14171d">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#121212">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
   :root {
-    --bg: #14171d;
-    --panel: #1c2029;
-    --panel-2: #232834;
-    --line: #2e3440;
-    --text: #eceef2;
-    --text-dim: #9aa3b2;
-    --text-faint: #626a7a;
-    --amber: #f0a93c;
-    --amber-dim: #6b5426;
-    --green: #3fae7a;
-    --green-dim: #234a37;
-    --red: #e2572b;
-    --red-dim: #5c2a1a;
-    --blue: #2f8fe0;
-    --board: #0d1015;
-    --board-text: #f0a93c;
+    --bg: #121212;
+    --panel: #1B1B1E;
+    --panel-2: #202024;
+    --line: #2A2A2E;
+    --text: #F5F5F7;
+    --text-dim: #A8ACB4;
+    --text-faint: #6B7280;
+    --green: #10B981;
+    --green-tint: rgba(16,185,129,0.14);
+    --amber: #F59E0B;
+    --amber-tint: rgba(245,158,11,0.14);
+    --red: #EF4444;
+    --red-tint: rgba(239,68,68,0.14);
+    --accent: #3B82F6;
+    --accent-tint: rgba(59,130,246,0.14);
+    --shadow: 0 2px 8px rgba(0,0,0,0.18);
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   @media (prefers-color-scheme: light) {
     :root:not([data-theme="dark"]) {
-      --bg: #eef0f3; --panel: #ffffff; --panel-2: #f5f6f8; --line: #dde1e7;
-      --text: #1a1d24; --text-dim: #545c6b; --text-faint: #8890a0;
-      --board: #14171d; --board-text: #f0a93c;
+      --bg: #F8F9FA; --panel: #FFFFFF; --panel-2: #F4F5F7; --line: #E5E7EB;
+      --text: #111318; --text-dim: #4B5563; --text-faint: #6B7280;
+      --shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
   }
   :root[data-theme="dark"] {
-    --bg: #14171d; --panel: #1c2029; --panel-2: #232834; --line: #2e3440;
-    --text: #eceef2; --text-dim: #9aa3b2; --text-faint: #626a7a;
+    --bg: #121212; --panel: #1B1B1E; --panel-2: #202024; --line: #2A2A2E;
+    --text: #F5F5F7; --text-dim: #A8ACB4; --text-faint: #6B7280;
+    --shadow: 0 2px 8px rgba(0,0,0,0.18);
   }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; box-sizing: border-box; }
   *, *::before, *::after { box-sizing: inherit; }
-  body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 28px 18px 60px; }
+  body {
+    margin: 0; min-height: 100%; background: var(--bg); color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 18px 60px; }
+  button, select, input { font-family: inherit; }
 
-  header { margin-bottom: 22px; }
+  /* ---------- Header ---------- */
+  header { margin-bottom: 18px; }
   .eyebrow-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: clamp(30px, 6vw, 42px); letter-spacing: 0.2px; margin: 0 0 6px; line-height: 1.02; }
-  .tagline { color: var(--text-dim); font-size: 14.5px; max-width: 56ch; line-height: 1.5; margin: 0; }
-  .proto-note { margin-top: 10px; font-size: 12.5px; color: var(--text-faint); border-left: 2px solid var(--amber); padding-left: 9px; }
+  h1 { font-weight: 800; font-size: clamp(26px, 5.5vw, 34px); letter-spacing: -0.02em; margin: 0 0 6px; line-height: 1.1; color: var(--text); }
+  .tagline { color: var(--text-dim); font-size: 14px; max-width: 56ch; line-height: 1.5; margin: 0; }
+  .proto-note { margin-top: 10px; font-size: 12.5px; color: var(--text-faint); border-left: 2px solid var(--accent); padding-left: 9px; }
   .lang-switch select {
     background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
-    border-radius: 8px; padding: 7px 10px; font-size: 12.5px; font-family: inherit; cursor: pointer;
+    border-radius: 10px; padding: 0 12px; font-size: 13px; font-weight: 500; cursor: pointer;
+    min-height: 44px;
   }
 
-  .mapcard { position: relative; background: linear-gradient(160deg, var(--panel-2), var(--panel)); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin: 22px 0 26px; }
-  .mapcard-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 0; }
-  .mapcard-head h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.3px; margin: 0; color: var(--text-dim); }
-  .mapcard-head span { font-size: 11.5px; color: var(--text-faint); }
-  .locate-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px 12px; flex-wrap: wrap; }
-  .locate-btn { background: var(--amber-dim); color: var(--amber); border: 1px solid var(--amber); border-radius: 8px; padding: 7px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  /* ---------- Sticky search + filters ---------- */
+  .sticky-bar {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 25;
+    background: var(--bg); padding: 10px 0 12px; margin-bottom: 4px;
+    border-bottom: 1px solid transparent;
+  }
+  .sticky-bar.scrolled { border-bottom-color: var(--line); }
+  .search-input-wrap { position: relative; margin-bottom: 10px; }
+  .search-input {
+    width: 100%; min-height: 44px; background: var(--panel); border: 1px solid var(--line);
+    color: var(--text); border-radius: 12px; padding: 0 14px; font-size: 15px; box-shadow: var(--shadow);
+  }
+  .search-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .filter-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-pill {
+    display: inline-flex; align-items: center; min-height: 40px; padding: 0 15px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--panel); color: var(--text-dim);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .filter-pill.active { background: var(--accent-tint); border-color: var(--accent); color: var(--accent); }
+
+  /* ---------- Map card ---------- */
+  .mapcard { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin: 0 0 20px; box-shadow: var(--shadow); }
+  .mapcard-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 16px 0; }
+  .mapcard-head h2 { font-size: 14px; font-weight: 700; letter-spacing: 0.1px; margin: 0; color: var(--text); }
+  .mapcard-head span { font-size: 12px; color: var(--text-faint); }
+  .locate-row { display: flex; align-items: center; gap: 10px; padding: 12px 16px 14px; flex-wrap: wrap; }
+  .locate-btn {
+    display: inline-flex; align-items: center; min-height: 44px; background: var(--accent-tint); color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 10px; padding: 0 14px; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
   .locate-btn:disabled { opacity: 0.55; cursor: default; }
-  .locate-status { font-size: 11.5px; color: var(--text-faint); }
+  .locate-status { font-size: 12px; color: var(--text-faint); }
   .mapbox { position: relative; width: 100%; aspect-ratio: 10 / 7; z-index: 0; }
   .mapbox .leaflet-container { width: 100%; height: 100%; background: var(--panel-2); font-family: inherit; }
-  .mapbox .leaflet-popup-content-wrapper { background: var(--panel); color: var(--text); border-radius: 10px; }
+  .mapbox .leaflet-popup-content-wrapper { background: var(--panel); color: var(--text); border-radius: 12px; }
   .mapbox .leaflet-popup-tip { background: var(--panel); }
   .mapbox .leaflet-popup-content { font-family: 'Inter', sans-serif; font-size: 13px; margin: 10px 12px; }
-  .mapbox .leaflet-popup-content b { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; }
-  .crossing-marker { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #0d0f13; box-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+  .mapbox .leaflet-popup-content b { font-size: 14.5px; font-weight: 700; }
+  .crossing-marker { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--panel); box-shadow: 0 1px 4px rgba(0,0,0,0.35); }
   .crossing-marker.wait-none { background: var(--text-faint); }
   .crossing-marker.wait-low { background: var(--green); }
   .crossing-marker.wait-mid { background: var(--amber); }
   .crossing-marker.wait-high { background: var(--red); }
-  .user-marker-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--blue); border: 3px solid #fff; box-shadow: 0 0 0 5px rgba(47,143,224,0.3); }
+  .user-marker-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 3px solid #fff; box-shadow: 0 0 0 5px var(--accent-tint); }
 
-  .map-legend { display: flex; flex-wrap: wrap; gap: 14px; padding: 10px 16px 14px; font-size: 11px; color: var(--text-faint); }
-  .map-legend span { display: inline-flex; align-items: center; gap: 5px; }
-  .map-legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .map-legend { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px 16px; }
+  .legend-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--text-dim); background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px 4px 8px; }
+  .legend-pill i { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 
-  .board { background: var(--board); border-radius: 14px; padding: 6px 0; margin-bottom: 26px; border: 1px solid var(--line); }
-  .board-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px 10px; border-bottom: 1px solid #262a33; flex-wrap: wrap; gap: 8px; }
-  .board-head h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.3px; margin: 0; color: #cfd4dc; }
-  .board-head-right { display: flex; align-items: center; gap: 10px; }
-  .board-head span.count { font-size: 11px; color: #6a7181; }
-  .sort-toggle { display: flex; gap: 6px; }
-  .sort-toggle button { padding: 5px 10px; border-radius: 7px; border: 1px solid #2b2f39; background: #191c24; color: #9aa3b2; font-size: 11.5px; cursor: pointer; font-family: inherit; }
-  .sort-toggle button.active { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
-  .row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 11px 16px; border-bottom: 1px solid #21242c; background: transparent; border-left: none; border-right: none; border-top: none; width: 100%; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-  .row:last-child { border-bottom: none; }
-  .row:hover { background: #191c24; }
-  .row-name { font-weight: 600; font-size: 14.5px; color: #eceef2; }
-  .row-route { font-size: 12px; color: #6a7181; margin-top: 1px; }
-  .row-distance { font-size: 11px; color: #4d84b5; margin-top: 1px; }
-  .badge-closest { display: inline-block; margin-left: 6px; font-size: 10px; background: var(--amber-dim); color: var(--amber); padding: 1px 6px; border-radius: 999px; font-weight: 700; vertical-align: middle; }
-  .row-wait { font-family: 'Roboto Mono', monospace; font-size: 18px; font-weight: 700; color: var(--board-text); min-width: 64px; text-align: right; }
-  .row-wait.none { color: #4a5060; font-size: 15px; }
-  .row-updated { font-size: 10.5px; color: #565d6c; text-align: right; min-width: 58px; }
+  /* ---------- Board section ---------- */
+  .board-section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 4px 2px 10px; }
+  .board-section-head h2 { font-size: 15px; font-weight: 700; margin: 0; color: var(--text); }
+  .board-section-head span { font-size: 12px; color: var(--text-faint); }
+  .cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; }
+  .cc-card {
+    display: block; width: 100%; text-align: left; font: inherit; color: inherit;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+    padding: 14px 16px; cursor: pointer; box-shadow: var(--shadow);
+  }
+  .cc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .cc-name { font-weight: 700; font-size: 15.5px; color: var(--text); line-height: 1.3; }
+  .badge-closest { display: inline-block; margin-left: 6px; font-size: 10px; background: var(--accent-tint); color: var(--accent); padding: 2px 7px; border-radius: 999px; font-weight: 700; vertical-align: middle; }
+  .cc-route { font-size: 12.5px; color: var(--text-faint); margin-top: 2px; }
+  .cc-wait-pill {
+    flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; min-width: 60px;
+  }
+  .cc-wait-num { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; }
+  .cc-wait-unit { font-size: 11px; font-weight: 600; color: var(--text-faint); margin-top: 2px; }
+  .cc-wait-num.low { color: var(--green); }
+  .cc-wait-num.mid { color: var(--amber); }
+  .cc-wait-num.high { color: var(--red); }
+  .cc-wait-num.none { color: var(--text-faint); font-size: 20px; }
+  .cc-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 10px; font-size: 12px; color: var(--text-faint); }
+  .cc-trend { display: inline-flex; align-items: center; gap: 3px; font-weight: 700; }
+  .cc-trend.up { color: var(--red); }
+  .cc-trend.down { color: var(--green); }
+  .cc-lanes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .cc-chip {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600;
+    color: var(--text-dim); background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 999px; padding: 4px 10px;
+  }
+  .cc-chip .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .cc-chip .dot.low { background: var(--green); }
+  .cc-chip .dot.mid { background: var(--amber); }
+  .cc-chip .dot.high { background: var(--red); }
+  .cc-chip .dot.none { background: var(--text-faint); }
+  .no-results { color: var(--text-faint); font-size: 13.5px; padding: 20px 4px; text-align: center; }
 
-  .ticker-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px 6px; margin-bottom: 26px; }
-  .ticker-card h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0.3px; margin: 0 0 10px; color: var(--text-dim); }
-  .ticker-item { display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  /* ---------- Ticker ---------- */
+  .ticker-card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px 6px; margin-bottom: 26px; box-shadow: var(--shadow); }
+  .ticker-card h2 { font-size: 14px; font-weight: 700; margin: 0 0 10px; color: var(--text); }
+  .ticker-item { display: flex; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13px; }
   .ticker-item:first-child { border-top: none; }
   .ticker-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
   .ticker-dot.wait-low { background: var(--green); }
@@ -115,30 +170,31 @@
   .ticker-time { color: var(--text-faint); font-size: 11.5px; margin-top: 2px; }
   .empty { color: var(--text-faint); font-size: 13px; padding: 10px 0 14px; }
 
-  .overlay { position: fixed; inset: 0; background: rgba(8,9,12,0.6); display: none; align-items: flex-end; justify-content: center; z-index: 40; padding: 0; }
+  /* ---------- Modal ---------- */
+  .overlay { position: fixed; inset: 0; background: rgba(8,9,12,0.55); display: none; align-items: flex-end; justify-content: center; z-index: 40; padding: 0; }
   .overlay.open { display: flex; }
   @media (min-width: 640px) { .overlay { align-items: center; } }
-  .modal { background: var(--panel); border: 1px solid var(--line); width: 100%; max-width: 460px; border-radius: 16px 16px 0 0; padding: 20px 20px calc(22px + env(safe-area-inset-bottom, 0px)); max-height: 88vh; overflow-y: auto; }
-  @media (min-width: 640px) { .modal { border-radius: 16px; } }
-  .modal h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; margin: 0 0 3px; }
+  .modal { background: var(--panel); border: 1px solid var(--line); width: 100%; max-width: 460px; border-radius: 20px 20px 0 0; padding: 20px 20px calc(22px + env(safe-area-inset-bottom, 0px)); max-height: 88vh; overflow-y: auto; }
+  @media (min-width: 640px) { .modal { border-radius: 20px; } }
+  .modal h3 { font-size: 20px; font-weight: 800; margin: 0 0 3px; letter-spacing: -0.01em; }
   .modal .route { color: var(--text-dim); font-size: 13px; margin-bottom: 16px; }
-  label { display: block; font-size: 12.5px; color: var(--text-dim); font-weight: 500; margin: 14px 0 6px; }
+  label { display: block; font-size: 12.5px; color: var(--text-dim); font-weight: 600; margin: 14px 0 6px; }
   label:first-of-type { margin-top: 0; }
-  select, input[type="number"], input[type="text"], textarea { width: 100%; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 9px; padding: 10px 12px; font-size: 15px; font-family: inherit; }
-  select:focus, input:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--amber); outline-offset: 1px; }
+  select, input[type="number"], input[type="text"], textarea { width: 100%; min-height: 44px; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 0 12px; font-size: 15px; }
+  select:focus, input:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .seg { display: flex; gap: 6px; flex-wrap: wrap; }
-  .seg button { flex: 1; min-width: 64px; padding: 9px 6px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text-dim); font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; }
-  .seg button.active { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
-  .submit-btn { width: 100%; margin-top: 20px; padding: 13px; border-radius: 10px; border: none; background: var(--amber); color: #1a1400; font-weight: 700; font-size: 15px; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .seg button { flex: 1; min-width: 64px; min-height: 44px; padding: 0 6px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--text-dim); font-size: 13px; font-weight: 600; cursor: pointer; }
+  .seg button.active { background: var(--accent-tint); border-color: var(--accent); color: var(--accent); }
+  .submit-btn { width: 100%; min-height: 48px; margin-top: 20px; padding: 0 13px; border-radius: 12px; border: none; background: var(--accent); color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; }
   .submit-btn:active { transform: scale(0.99); }
-  .close-btn { position: absolute; top: 14px; right: 14px; background: none; border: none; color: var(--text-faint); font-size: 22px; cursor: pointer; line-height: 1; padding: 4px; }
+  .close-btn { position: absolute; top: 10px; right: 10px; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--text-faint); font-size: 22px; cursor: pointer; line-height: 1; }
   .modal-inner { position: relative; }
 
-  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--green); color: #06231a; padding: 11px 18px; border-radius: 999px; font-size: 13.5px; font-weight: 600; opacity: 0; transition: all 0.25s ease; pointer-events: none; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--green); color: #06231a; padding: 11px 18px; border-radius: 999px; font-size: 13.5px; font-weight: 700; opacity: 0; transition: all 0.25s ease; pointer-events: none; z-index: 60; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
   footer { text-align: center; margin-top: 6px; }
-  footer button { background: none; border: none; color: var(--text-faint); font-size: 11.5px; text-decoration: underline; cursor: pointer; padding: 6px; font-family: inherit; }
+  footer button { background: none; border: none; color: var(--text-faint); font-size: 11.5px; text-decoration: underline; cursor: pointer; min-height: 44px; padding: 0 6px; }
 </style>
 </head>
 <body>
@@ -168,26 +224,29 @@
     </div>
     <div class="mapbox" id="mapbox"></div>
     <div class="map-legend">
-      <span><i style="background:var(--text-faint)"></i> <span data-i18n="legendNone">No reports yet</span></span>
-      <span><i style="background:var(--green)"></i> <span data-i18n="legendLow">Under 20 min</span></span>
-      <span><i style="background:var(--amber)"></i> <span data-i18n="legendMid">20–60 min</span></span>
-      <span><i style="background:var(--red)"></i> <span data-i18n="legendHigh">Over 60 min</span></span>
+      <span class="legend-pill"><i style="background:var(--text-faint)"></i><span data-i18n="legendNone">No reports yet</span></span>
+      <span class="legend-pill"><i style="background:var(--green)"></i><span data-i18n="legendLow">0\u201315 min</span></span>
+      <span class="legend-pill"><i style="background:var(--amber)"></i><span data-i18n="legendMid">15\u201345 min</span></span>
+      <span class="legend-pill"><i style="background:var(--red)"></i><span data-i18n="legendHigh">45+ min</span></span>
     </div>
   </div>
 
-  <div class="board">
-    <div class="board-head">
-      <h2 data-i18n="boardHead">Current waits</h2>
-      <div class="board-head-right">
-        <div class="sort-toggle" id="sort-toggle">
-          <button data-mode="wait" class="active" data-i18n="sortBusiest">Busiest</button>
-          <button data-mode="distance" data-i18n="sortNearest">Nearest</button>
-        </div>
-        <span class="count" id="board-count"></span>
-      </div>
+  <div class="sticky-bar" id="sticky-bar">
+    <div class="search-input-wrap">
+      <input type="text" class="search-input" id="search-input" data-i18n-placeholder="searchPlaceholder">
     </div>
-    <div id="board-rows"></div>
+    <div class="filter-pills" id="filter-pills">
+      <button class="filter-pill" data-filter="distance" data-i18n="sortNearest">Nearest</button>
+      <button class="filter-pill" data-filter="shortest" data-i18n="filterShortest">Shortest wait</button>
+      <button class="filter-pill" data-filter="commercial" data-i18n="filterCommercial">Commercial</button>
+    </div>
   </div>
+
+  <div class="board-section-head">
+    <h2 data-i18n="boardHead">Current waits</h2>
+    <span id="board-count"></span>
+  </div>
+  <div class="cards" id="board-rows"></div>
 
   <div class="ticker-card">
     <h2 data-i18n="tickerHead">Recent reports</h2>
@@ -232,7 +291,7 @@
 (function () {
   "use strict";
 
-  /* ---------------- Crossings data ---------------- */
+  /* ---------------- Crossings data & translations ---------------- */
   var CROSSINGS = [
     { id: "dover-calais",     name: "Dover \u2192 Calais",                a: "GB", b: "FR", lat: 51.130, lng: 1.310,  type: "ferry" },
     { id: "eurotunnel",       name: "Folkestone \u2192 Coquelles",         a: "GB", b: "FR", lat: 51.090, lng: 1.170,  type: "tunnel" },
@@ -283,12 +342,12 @@
   };
 
   var UI = {
-    en: { title:"Crossing Times", tagline:"Live border wait reports from people actually at the crossing \u2014 European land borders where queues genuinely happen.", protoNote:"Reports currently save on this device only. Live syncing between everyone\u2019s reports is coming soon.", mapHead:"Border crossings map", mapHint:"tap a pin to report", legendNone:"No reports yet", legendLow:"Under 20 min", legendMid:"20\u201360 min", legendHigh:"Over 60 min", locateBtn:"Use my location", locating:"Locating\u2026", locationDenied:"Location permission denied \u2014 showing all crossings", locationError:"Couldn\u2019t get your location \u2014 showing all crossings", sortBusiest:"Busiest", sortNearest:"Nearest", closestBadge:"Closest", boardHead:"Current waits", crossingsCount:function(n){return n+" crossings";}, tickerHead:"Recent reports", tickerEmpty:"No reports yet on this device. Tap a crossing above and add the first one.", footerClear:"Clear demo data on this device", modalTitle:"Report a wait", labelCrossing:"Crossing", labelDirection:"Direction", labelWait:"Wait time (minutes)", minutesPlaceholder:"e.g. 45", labelVehicle:"Vehicle", vehicleCar:"Car", vehicleTruck:"Truck", vehicleBus:"Bus", vehicleFoot:"On foot", labelNote:"Note (optional)", notePlaceholder:"e.g. only one lane open", submitBtn:"Submit report", toastAdded:"Report added", toastCleared:"Demo data cleared", timeJustNow:"just now", timeMinAgo:function(m){return m+"m ago";}, timeHourAgo:function(h){return h+"h ago";}, timeDayAgo:function(d){return d+"d ago";}, noData:"no data", kmAway:function(km){return km+" km away";}, underKm:"under 1 km away", langLabel:"Language" },
-    de: { title:"Grenzzeiten", tagline:"Live-Wartezeiten an Grenz\u00fcberg\u00e4ngen, gemeldet von Menschen, die gerade dort sind \u2014 europ\u00e4ische Landgrenzen, an denen es wirklich Staus gibt.", protoNote:"Meldungen werden derzeit nur auf diesem Ger\u00e4t gespeichert. Der Live-Abgleich zwischen allen Nutzern kommt bald.", mapHead:"Karte der Grenz\u00fcberg\u00e4nge", mapHint:"Zum Melden auf eine Markierung tippen", legendNone:"Noch keine Meldungen", legendLow:"Unter 20 Min", legendMid:"20\u201360 Min", legendHigh:"\u00dcber 60 Min", locateBtn:"Meinen Standort verwenden", locating:"Standort wird ermittelt\u2026", locationDenied:"Standortzugriff verweigert \u2014 alle \u00dcberg\u00e4nge werden angezeigt", locationError:"Standort konnte nicht ermittelt werden \u2014 alle \u00dcberg\u00e4nge werden angezeigt", sortBusiest:"Meiste Wartezeit", sortNearest:"N\u00e4chstgelegen", closestBadge:"Am n\u00e4chsten", boardHead:"Aktuelle Wartezeiten", crossingsCount:function(n){return n+" \u00dcberg\u00e4nge";}, tickerHead:"Neueste Meldungen", tickerEmpty:"Noch keine Meldungen auf diesem Ger\u00e4t. Auf einen \u00dcbergang oben tippen und die erste Meldung hinzuf\u00fcgen.", footerClear:"Demo-Daten auf diesem Ger\u00e4t l\u00f6schen", modalTitle:"Wartezeit melden", labelCrossing:"\u00dcbergang", labelDirection:"Richtung", labelWait:"Wartezeit (Minuten)", minutesPlaceholder:"z. B. 45", labelVehicle:"Fahrzeug", vehicleCar:"Pkw", vehicleTruck:"Lkw", vehicleBus:"Bus", vehicleFoot:"Zu Fu\u00df", labelNote:"Notiz (optional)", notePlaceholder:"z. B. nur eine Spur ge\u00f6ffnet", submitBtn:"Meldung senden", toastAdded:"Meldung hinzugef\u00fcgt", toastCleared:"Demo-Daten gel\u00f6scht", timeJustNow:"gerade eben", timeMinAgo:function(m){return "vor "+m+" Min";}, timeHourAgo:function(h){return "vor "+h+" Std";}, timeDayAgo:function(d){return "vor "+d+" Tg";}, noData:"keine Daten", kmAway:function(km){return km+" km entfernt";}, underKm:"unter 1 km entfernt", langLabel:"Sprache" },
-    sr: { title:"Vreme \u010dekanja", tagline:"Prijave \u010dekanja na granicama uživo, od ljudi koji su trenutno tamo \u2014 evropske kopnene granice na kojima zaista ima gu\u017evi.", protoNote:"Prijave se trenutno \u010duvaju samo na ovom ure\u0111aju. Uskoro sti\u017ee sinhronizacija u\u017eivo izme\u0111u svih korisnika.", mapHead:"Mapa graninih prelaza".replace("Graninih","Grani\u010dnih"), mapHint:"Dodirnite oznaku za prijavu", legendNone:"Jo\u0161 nema prijava", legendLow:"Manje od 20 min", legendMid:"20\u201360 min", legendHigh:"Vi\u0161e od 60 min", locateBtn:"Koristi moju lokaciju", locating:"Odre\u0111ivanje lokacije\u2026", locationDenied:"Pristup lokaciji odbijen \u2014 prikazani su svi prelazi", locationError:"Nije mogu\u0107e odrediti lokaciju \u2014 prikazani su svi prelazi", sortBusiest:"Najve\u0107e gu\u017eve", sortNearest:"Najbli\u017ei", closestBadge:"Najbli\u017ei", boardHead:"Trenutna \u010dekanja", crossingsCount:function(n){return n+" prelaza";}, tickerHead:"Nedavne prijave", tickerEmpty:"Jo\u0161 nema prijava na ovom ure\u0111aju. Dodirnite prelaz iznad i dodajte prvu prijavu.", footerClear:"Obri\u0161i demo podatke na ovom ure\u0111aju", modalTitle:"Prijavi \u010dekanje", labelCrossing:"Prelaz", labelDirection:"Smer", labelWait:"Vreme \u010dekanja (minuti)", minutesPlaceholder:"npr. 45", labelVehicle:"Vozilo", vehicleCar:"Automobil", vehicleTruck:"Kamion", vehicleBus:"Autobus", vehicleFoot:"Pe\u0161ice", labelNote:"Napomena (opciono)", notePlaceholder:"npr. otvorena samo jedna traka", submitBtn:"Po\u0161alji prijavu", toastAdded:"Prijava dodata", toastCleared:"Demo podaci obrisani", timeJustNow:"upravo sada", timeMinAgo:function(m){return "pre "+m+" min";}, timeHourAgo:function(h){return "pre "+h+" h";}, timeDayAgo:function(d){return "pre "+d+" d";}, noData:"nema podataka", kmAway:function(km){return km+" km udaljeno";}, underKm:"manje od 1 km", langLabel:"Jezik" },
-    mk: { title:"\u0412\u0440\u0435\u043c\u0438\u045a\u0430 \u043d\u0430 \u0447\u0435\u043a\u0430\u045a\u0435", tagline:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438 \u0437\u0430 \u0447\u0435\u043a\u0430\u045a\u0435 \u043d\u0430 \u0433\u0440\u0430\u043d\u0438\u0446\u0430 \u0432\u043e \u0436\u0438\u0432\u043e, \u043e\u0434 \u043b\u0443\u0453\u0435 \u043a\u043e\u0438 \u0441\u0435 \u0442\u043e\u043a\u043c\u0443 \u0442\u0430\u043c\u0443 \u2014 \u0435\u0432\u0440\u043e\u043f\u0441\u043a\u0438 \u043a\u043e\u043f\u043d\u0435\u043d\u0438 \u0433\u0440\u0430\u043d\u0438\u0446\u0438 \u043a\u0430\u0434\u0435 \u0448\u0442\u043e \u043d\u0430\u0432\u0438\u0441\u0442\u0438\u043d\u0430 \u0438\u043c\u0430 \u0437\u0430\u0434\u0440\u0436\u0443\u0432\u0430\u045a\u0435.", protoNote:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438\u0442\u0435 \u043c\u043e\u043c\u0435\u043d\u0442\u0430\u043b\u043d\u043e \u0441\u0435 \u0447\u0443\u0432\u0430\u0430\u0442 \u0441\u0430\u043c\u043e \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434. \u0421\u0438\u043d\u0445\u0440\u043e\u043d\u0438\u0437\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u0432\u043e \u0436\u0438\u0432\u043e \u0441\u043e \u0441\u0438\u0442\u0435 \u043a\u043e\u0440\u0438\u0441\u043d\u0438\u0446\u0438 \u0434\u043e\u0430\u0453\u0430 \u043d\u0430\u0441\u043a\u043e\u0440\u043e.", mapHead:"\u041c\u0430\u043f\u0430 \u043d\u0430 \u0433\u0440\u0430\u043d\u0438\u0447\u043d\u0438 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", mapHint:"\u0414\u043e\u043f\u0440\u0435\u0442\u0435 \u043e\u0437\u043d\u0430\u043a\u0430 \u0437\u0430 \u0434\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438\u0442\u0435", legendNone:"\u0421\u0451 \u0443\u0448\u0442\u0435 \u043d\u0435\u043c\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438", legendLow:"\u041f\u043e\u0434 20 \u043c\u0438\u043d", legendMid:"20\u201360 \u043c\u0438\u043d", legendHigh:"\u041d\u0430\u0434 60 \u043c\u0438\u043d", locateBtn:"\u041a\u043e\u0440\u0438\u0441\u0442\u0438 \u0458\u0430 \u043c\u043e\u0458\u0430\u0442\u0430 \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430", locating:"\u0421\u0435 \u043b\u043e\u0446\u0438\u0440\u0430\u2026", locationDenied:"\u041f\u0440\u0438\u0441\u0442\u0430\u043f\u043e\u0442 \u0434\u043e \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u0435 \u043e\u0434\u0431\u0438\u0435\u043d \u2014 \u043f\u0440\u0438\u043a\u0430\u0436\u0430\u043d\u0438 \u0441\u0435 \u0441\u0438\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", locationError:"\u041d\u0435 \u043c\u043e\u0436\u0435\u0448\u0435 \u0434\u0430 \u0441\u0435 \u043e\u0434\u0440\u0435\u0434\u0438 \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u2014 \u043f\u0440\u0438\u043a\u0430\u0436\u0430\u043d\u0438 \u0441\u0435 \u0441\u0438\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", sortBusiest:"\u041d\u0430\u0458\u0437\u0430\u0444\u0430\u0442\u0435\u043d\u0438", sortNearest:"\u041d\u0430\u0458\u0431\u043b\u0438\u0441\u043a\u0438", closestBadge:"\u041d\u0430\u0458\u0431\u043b\u0438\u0441\u043a\u0443", boardHead:"\u0422\u0435\u043a\u043e\u0432\u043d\u0438 \u0447\u0435\u043a\u0430\u045a\u0430", crossingsCount:function(n){return n+" \u043f\u0440\u0435\u043c\u0438\u043d\u0438";}, tickerHead:"\u041d\u0435\u043e\u0434\u0430\u043c\u043d\u0435\u0448\u043d\u0438 \u043f\u0440\u0438\u0458\u0430\u0432\u0438", tickerEmpty:"\u0421\u0451 \u0443\u0448\u0442\u0435 \u043d\u0435\u043c\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438 \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434. \u0414\u043e\u043f\u0440\u0435\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d \u043f\u043e\u0433\u043e\u0440\u0435 \u0438 \u0434\u043e\u0434\u0430\u0434\u0435\u0442\u0435 \u0458\u0430 \u043f\u0440\u0432\u0430\u0442\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0430.", footerClear:"\u0418\u0437\u0431\u0440\u0438\u0448\u0438 \u0434\u0435\u043c\u043e \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438 \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434", modalTitle:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438 \u0447\u0435\u043a\u0430\u045a\u0435", labelCrossing:"\u041f\u0440\u0435\u043c\u0438\u043d", labelDirection:"\u041d\u0430\u0441\u043e\u043a\u0430", labelWait:"\u0412\u0440\u0435\u043c\u0435 \u043d\u0430 \u0447\u0435\u043a\u0430\u045a\u0435 (\u043c\u0438\u043d\u0443\u0442\u0438)", minutesPlaceholder:"\u043d\u0430 \u043f\u0440. 45", labelVehicle:"\u0412\u043e\u0437\u0438\u043b\u043e", vehicleCar:"\u0410\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b", vehicleTruck:"\u041a\u0430\u043c\u0438\u043e\u043d", vehicleBus:"\u0410\u0432\u0442\u043e\u0431\u0443\u0441", vehicleFoot:"\u041f\u0435\u0448\u043a\u0438", labelNote:"\u0411\u0435\u043b\u0435\u0448\u043a\u0430 (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u043d\u043e)", notePlaceholder:"\u043d\u0430 \u043f\u0440. \u043e\u0442\u0432\u043e\u0440\u0435\u043d\u0430 \u0441\u0430\u043c\u043e \u0435\u0434\u043d\u0430 \u043b\u0435\u043d\u0442\u0430", submitBtn:"\u0418\u0441\u043f\u0440\u0430\u0442\u0438 \u043f\u0440\u0438\u0458\u0430\u0432\u0430", toastAdded:"\u041f\u0440\u0438\u0458\u0430\u0432\u0430\u0442\u0430 \u0435 \u0434\u043e\u0434\u0430\u0434\u0435\u043d\u0430", toastCleared:"\u0414\u0435\u043c\u043e \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438\u0442\u0435 \u0441\u0435 \u0438\u0437\u0431\u0440\u0438\u0448\u0430\u043d\u0438", timeJustNow:"\u0442\u043e\u043a\u043c\u0443 \u0441\u0435\u0433\u0430", timeMinAgo:function(m){return "\u043f\u0440\u0435\u0434 "+m+" \u043c\u0438\u043d";}, timeHourAgo:function(h){return "\u043f\u0440\u0435\u0434 "+h+" \u0447";}, timeDayAgo:function(d){return "\u043f\u0440\u0435\u0434 "+d+" \u0434";}, noData:"\u043d\u0435\u043c\u0430 \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438", kmAway:function(km){return km+" \u043a\u043c \u043e\u0434\u0434\u0430\u043b\u0435\u0447\u0435\u043d\u043e\u0441\u0442";}, underKm:"\u043f\u043e\u043c\u0430\u043b\u043a\u0443 \u043e\u0434 1 \u043a\u043c", langLabel:"\u0408\u0430\u0437\u0438\u043a" },
-    tr: { title:"Ge\u00e7i\u015f S\u00fcreleri", tagline:"S\u0131n\u0131rda ger\u00e7ekten bulunan ki\u015filerden canl\u0131 bekleme s\u00fcresi bildirimleri \u2014 ger\u00e7ekten kuyruk olan Avrupa kara s\u0131n\u0131rlar\u0131.", protoNote:"Bildirimler \u015fu anda yaln\u0131zca bu cihazda kaydediliyor. T\u00fcm kullan\u0131c\u0131lar aras\u0131nda canl\u0131 senkronizasyon yak\u0131nda geliyor.", mapHead:"S\u0131n\u0131r kap\u0131lar\u0131 haritas\u0131", mapHint:"Bildirmek i\u00e7in bir i\u015farete dokunun", legendNone:"Hen\u00fcz bildirim yok", legendLow:"20 dakikadan az", legendMid:"20\u201360 dakika", legendHigh:"60 dakikadan fazla", locateBtn:"Konumumu kullan", locating:"Konum belirleniyor\u2026", locationDenied:"Konum izni reddedildi \u2014 t\u00fcm ge\u00e7i\u015fler g\u00f6steriliyor", locationError:"Konum al\u0131namad\u0131 \u2014 t\u00fcm ge\u00e7i\u015fler g\u00f6steriliyor", sortBusiest:"En yo\u011fun", sortNearest:"En yak\u0131n", closestBadge:"En yak\u0131n", boardHead:"G\u00fcncel bekleme s\u00fcreleri", crossingsCount:function(n){return n+" ge\u00e7i\u015f";}, tickerHead:"Son bildirimler", tickerEmpty:"Bu cihazda hen\u00fcz bildirim yok. Yukar\u0131dan bir ge\u00e7i\u015fe dokunun ve ilk bildirimi ekleyin.", footerClear:"Bu cihazdaki demo verilerini temizle", modalTitle:"Bekleme s\u00fcresi bildir", labelCrossing:"S\u0131n\u0131r kap\u0131s\u0131", labelDirection:"Y\u00f6n", labelWait:"Bekleme s\u00fcresi (dakika)", minutesPlaceholder:"\u00f6rn. 45", labelVehicle:"Ara\u00e7", vehicleCar:"Otomobil", vehicleTruck:"Kamyon", vehicleBus:"Otob\u00fcs", vehicleFoot:"Yaya", labelNote:"Not (iste\u011fe ba\u011fl\u0131)", notePlaceholder:"\u00f6rn. sadece bir \u015ferit a\u00e7\u0131k", submitBtn:"Bildirimi g\u00f6nder", toastAdded:"Bildirim eklendi", toastCleared:"Demo verileri temizlendi", timeJustNow:"az \u00f6nce", timeMinAgo:function(m){return m+" dk \u00f6nce";}, timeHourAgo:function(h){return h+" sa \u00f6nce";}, timeDayAgo:function(d){return d+" g\u00fcn \u00f6nce";}, noData:"veri yok", kmAway:function(km){return km+" km uzakta";}, underKm:"1 km\u2019den az", langLabel:"Dil" },
-    el: { title:"\u03a7\u03c1\u03cc\u03bd\u03bf\u03b9 \u0394\u03b9\u03ad\u03bb\u03b5\u03c5\u03c3\u03b7\u03c2", tagline:"Live \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2 \u03c3\u03c4\u03b1 \u03c3\u03cd\u03bd\u03bf\u03c1\u03b1 \u03b1\u03c0\u03cc \u03b1\u03bd\u03b8\u03c1\u03ce\u03c0\u03bf\u03c5\u03c2 \u03c0\u03bf\u03c5 \u03b2\u03c1\u03af\u03c3\u03ba\u03bf\u03bd\u03c4\u03b1\u03b9 \u03b5\u03ba\u03b5\u03af \u2014 \u03b5\u03c5\u03c1\u03c9\u03c0\u03b1\u03ca\u03ba\u03ac \u03c7\u03b5\u03c1\u03c3\u03b1\u03af\u03b1 \u03c3\u03cd\u03bd\u03bf\u03c1\u03b1 \u03cc\u03c0\u03bf\u03c5 \u03cc\u03bd\u03c4\u03c9\u03c2 \u03c5\u03c0\u03ac\u03c1\u03c7\u03bf\u03c5\u03bd \u03bf\u03c5\u03c1\u03ad\u03c2.", protoNote:"\u039f\u03b9 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03b1\u03c0\u03bf\u03b8\u03b7\u03ba\u03b5\u03cd\u03bf\u03bd\u03c4\u03b1\u03b9 \u03c0\u03c1\u03bf\u03c2 \u03c4\u03bf \u03c0\u03b1\u03c1\u03cc\u03bd \u03bc\u03cc\u03bd\u03bf \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae. \u039f \u03c3\u03c5\u03b3\u03c7\u03c1\u03bf\u03bd\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c3\u03b5 \u03c0\u03c1\u03b1\u03b3\u03bc\u03b1\u03c4\u03b9\u03ba\u03cc \u03c7\u03c1\u03cc\u03bd\u03bf \u03bc\u03b5\u03c4\u03b1\u03be\u03cd \u03cc\u03bb\u03c9\u03bd \u03c4\u03c9\u03bd \u03c7\u03c1\u03b7\u03c3\u03c4\u03ce\u03bd \u03ad\u03c1\u03c7\u03b5\u03c4\u03b1\u03b9 \u03c3\u03cd\u03bd\u03c4\u03bf\u03bc\u03b1.", mapHead:"\u03a7\u03ac\u03c1\u03c4\u03b7\u03c2 \u03c3\u03c5\u03bd\u03bf\u03c1\u03b9\u03b1\u03ba\u03ce\u03bd \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03c9\u03bd", mapHint:"\u03a0\u03b1\u03c4\u03ae\u03c3\u03c4\u03b5 \u03bc\u03b9\u03b1 \u03ba\u03b1\u03c1\u03c6\u03af\u03c4\u03c3\u03b1 \u03b3\u03b9\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac", legendNone:"\u039a\u03b1\u03bc\u03af\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03b1\u03ba\u03cc\u03bc\u03b1", legendLow:"\u039a\u03ac\u03c4\u03c9 \u03b1\u03c0\u03cc 20 \u03bb\u03b5\u03c0\u03c4\u03ac", legendMid:"20\u201360 \u03bb\u03b5\u03c0\u03c4\u03ac", legendHigh:"\u03a0\u03ac\u03bd\u03c9 \u03b1\u03c0\u03cc 60 \u03bb\u03b5\u03c0\u03c4\u03ac", locateBtn:"\u03a7\u03c1\u03ae\u03c3\u03b7 \u03c4\u03b7\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2 \u03bc\u03bf\u03c5", locating:"\u0395\u03bd\u03c4\u03bf\u03c0\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2\u2026", locationDenied:"\u0397 \u03c0\u03c1\u03cc\u03c3\u03b2\u03b1\u03c3\u03b7 \u03c3\u03c4\u03b7\u03bd \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1 \u03b1\u03c0\u03bf\u03c1\u03c1\u03af\u03c6\u03b8\u03b7\u03ba\u03b5 \u2014 \u03b5\u03bc\u03c6\u03b1\u03bd\u03af\u03b6\u03bf\u03bd\u03c4\u03b1\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2", locationError:"\u0394\u03b5\u03bd \u03ae\u03c4\u03b1\u03bd \u03b4\u03c5\u03bd\u03b1\u03c4\u03cc\u03c2 \u03bf \u03b5\u03bd\u03c4\u03bf\u03c0\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c4\u03b7\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2 \u2014 \u03b5\u03bc\u03c6\u03b1\u03bd\u03af\u03b6\u03bf\u03bd\u03c4\u03b1\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2", sortBusiest:"\u03a0\u03b9\u03bf \u03c0\u03bf\u03bb\u03c5\u03c3\u03cd\u03c7\u03bd\u03b1\u03c3\u03c4\u03b5\u03c2", sortNearest:"\u03a0\u03bb\u03b7\u03c3\u03b9\u03ad\u03c3\u03c4\u03b5\u03c1\u03b5\u03c2", closestBadge:"\u03a0\u03bb\u03b7\u03c3\u03b9\u03ad\u03c3\u03c4\u03b5\u03c1\u03b7", boardHead:"\u03a4\u03c1\u03ad\u03c7\u03bf\u03bd\u03c4\u03b5\u03c2 \u03c7\u03c1\u03cc\u03bd\u03bf\u03b9 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2", crossingsCount:function(n){return n+" \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2";}, tickerHead:"\u03a0\u03c1\u03cc\u03c3\u03c6\u03b1\u03c4\u03b5\u03c2 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2", tickerEmpty:"\u0394\u03b5\u03bd \u03c5\u03c0\u03ac\u03c1\u03c7\u03bf\u03c5\u03bd \u03b1\u03ba\u03cc\u03bc\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae. \u03a0\u03b1\u03c4\u03ae\u03c3\u03c4\u03b5 \u03bc\u03b9\u03b1 \u03b4\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7 \u03c0\u03b1\u03c1\u03b1\u03c0\u03ac\u03bd\u03c9 \u03ba\u03b1\u03b9 \u03c0\u03c1\u03bf\u03c3\u03b8\u03ad\u03c3\u03c4\u03b5 \u03c4\u03b7\u03bd \u03c0\u03c1\u03ce\u03c4\u03b7 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac.", footerClear:"\u0394\u03b9\u03b1\u03b3\u03c1\u03b1\u03c6\u03ae \u03b4\u03bf\u03ba\u03b9\u03bc\u03b1\u03c3\u03c4\u03b9\u03ba\u03ce\u03bd \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03c9\u03bd \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae", modalTitle:"\u0391\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03c7\u03c1\u03cc\u03bd\u03bf\u03c5 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2", labelCrossing:"\u0394\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7", labelDirection:"\u039a\u03b1\u03c4\u03b5\u03cd\u03b8\u03c5\u03bd\u03c3\u03b7", labelWait:"\u03a7\u03c1\u03cc\u03bd\u03bf\u03c2 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2 (\u03bb\u03b5\u03c0\u03c4\u03ac)", minutesPlaceholder:"\u03c0.\u03c7. 45", labelVehicle:"\u038c\u03c7\u03b7\u03bc\u03b1", vehicleCar:"\u0391\u03c5\u03c4\u03bf\u03ba\u03af\u03bd\u03b7\u03c4\u03bf", vehicleTruck:"\u03a6\u03bf\u03c1\u03c4\u03b7\u03b3\u03cc", vehicleBus:"\u039b\u03b5\u03c9\u03c6\u03bf\u03c1\u03b5\u03af\u03bf", vehicleFoot:"\u03a0\u03b5\u03b6\u03cc\u03c2", labelNote:"\u03a3\u03b7\u03bc\u03b5\u03af\u03c9\u03c3\u03b7 (\u03c0\u03c1\u03bf\u03b1\u03b9\u03c1\u03b5\u03c4\u03b9\u03ba\u03cc)", notePlaceholder:"\u03c0.\u03c7. \u03bc\u03cc\u03bd\u03bf \u03bc\u03af\u03b1 \u03bb\u03c9\u03c1\u03af\u03b4\u03b1 \u03b1\u03bd\u03bf\u03b9\u03c7\u03c4\u03ae", submitBtn:"\u03a5\u03c0\u03bf\u03b2\u03bf\u03bb\u03ae \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac\u03c2", toastAdded:"\u0397 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03c0\u03c1\u03bf\u03c3\u03c4\u03ad\u03b8\u03b7\u03ba\u03b5", toastCleared:"\u03a4\u03b1 \u03b4\u03bf\u03ba\u03b9\u03bc\u03b1\u03c3\u03c4\u03b9\u03ba\u03ac \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03b1 \u03b4\u03b9\u03b1\u03b3\u03c1\u03ac\u03c6\u03b7\u03ba\u03b1\u03bd", timeJustNow:"\u03bc\u03cc\u03bb\u03b9\u03c2 \u03c4\u03ce\u03c1\u03b1", timeMinAgo:function(m){return "\u03c0\u03c1\u03b9\u03bd "+m+" \u03bb";}, timeHourAgo:function(h){return "\u03c0\u03c1\u03b9\u03bd "+h+" \u03ce";}, timeDayAgo:function(d){return "\u03c0\u03c1\u03b9\u03bd "+d+" \u03b7";}, noData:"\u03c7\u03c9\u03c1\u03af\u03c2 \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03b1", kmAway:function(km){return km+" \u03c7\u03bb\u03bc \u03bc\u03b1\u03ba\u03c1\u03b9\u03ac";}, underKm:"\u03bb\u03b9\u03b3\u03cc\u03c4\u03b5\u03c1\u03bf \u03b1\u03c0\u03cc 1 \u03c7\u03bb\u03bc", langLabel:"\u0393\u03bb\u03ce\u03c3\u03c3\u03b1" }
+    en: { title:"Crossing Times", tagline:"Live border wait reports from people actually at the crossing \u2014 European land borders where queues genuinely happen.", protoNote:"Reports currently save on this device only. Live syncing between everyone\u2019s reports is coming soon.", mapHead:"Border crossings map", mapHint:"tap a pin to report", legendNone:"No reports yet", legendLow:"0\u201315 min", legendMid:"15\u201345 min", legendHigh:"45+ min", locateBtn:"Use my location", locating:"Locating\u2026", locationDenied:"Location permission denied \u2014 showing all crossings", locationError:"Couldn\u2019t get your location \u2014 showing all crossings", sortBusiest:"Busiest", sortNearest:"Nearest", closestBadge:"Closest", boardHead:"Current waits", crossingsCount:function(n){return n+" crossings";}, tickerHead:"Recent reports", tickerEmpty:"No reports yet on this device. Tap a crossing above and add the first one.", footerClear:"Clear demo data on this device", modalTitle:"Report a wait", labelCrossing:"Crossing", labelDirection:"Direction", labelWait:"Wait time (minutes)", minutesPlaceholder:"e.g. 45", labelVehicle:"Vehicle", vehicleCar:"Car", vehicleTruck:"Truck", vehicleBus:"Bus", vehicleFoot:"On foot", labelNote:"Note (optional)", notePlaceholder:"e.g. only one lane open", submitBtn:"Submit report", toastAdded:"Report added", toastCleared:"Demo data cleared", timeJustNow:"just now", timeMinAgo:function(m){return m+"m ago";}, timeHourAgo:function(h){return h+"h ago";}, timeDayAgo:function(d){return d+"d ago";}, noData:"no data", kmAway:function(km){return km+" km away";}, underKm:"under 1 km away", searchPlaceholder:"Search crossings\u2026", filterShortest:"Shortest wait", filterCommercial:"Commercial", updatedPrefix:"Updated", vsLastHour:"vs last hour", langLabel:"Language" },
+    de: { title:"Grenzzeiten", tagline:"Live-Wartezeiten an Grenz\u00fcberg\u00e4ngen, gemeldet von Menschen, die gerade dort sind \u2014 europ\u00e4ische Landgrenzen, an denen es wirklich Staus gibt.", protoNote:"Meldungen werden derzeit nur auf diesem Ger\u00e4t gespeichert. Der Live-Abgleich zwischen allen Nutzern kommt bald.", mapHead:"Karte der Grenz\u00fcberg\u00e4nge", mapHint:"Zum Melden auf eine Markierung tippen", legendNone:"Noch keine Meldungen", legendLow:"0\u201315 Min", legendMid:"15\u201345 Min", legendHigh:"45+ Min", locateBtn:"Meinen Standort verwenden", locating:"Standort wird ermittelt\u2026", locationDenied:"Standortzugriff verweigert \u2014 alle \u00dcberg\u00e4nge werden angezeigt", locationError:"Standort konnte nicht ermittelt werden \u2014 alle \u00dcberg\u00e4nge werden angezeigt", sortBusiest:"Meiste Wartezeit", sortNearest:"N\u00e4chstgelegen", closestBadge:"Am n\u00e4chsten", boardHead:"Aktuelle Wartezeiten", crossingsCount:function(n){return n+" \u00dcberg\u00e4nge";}, tickerHead:"Neueste Meldungen", tickerEmpty:"Noch keine Meldungen auf diesem Ger\u00e4t. Auf einen \u00dcbergang oben tippen und die erste Meldung hinzuf\u00fcgen.", footerClear:"Demo-Daten auf diesem Ger\u00e4t l\u00f6schen", modalTitle:"Wartezeit melden", labelCrossing:"\u00dcbergang", labelDirection:"Richtung", labelWait:"Wartezeit (Minuten)", minutesPlaceholder:"z. B. 45", labelVehicle:"Fahrzeug", vehicleCar:"Pkw", vehicleTruck:"Lkw", vehicleBus:"Bus", vehicleFoot:"Zu Fu\u00df", labelNote:"Notiz (optional)", notePlaceholder:"z. B. nur eine Spur ge\u00f6ffnet", submitBtn:"Meldung senden", toastAdded:"Meldung hinzugef\u00fcgt", toastCleared:"Demo-Daten gel\u00f6scht", timeJustNow:"gerade eben", timeMinAgo:function(m){return "vor "+m+" Min";}, timeHourAgo:function(h){return "vor "+h+" Std";}, timeDayAgo:function(d){return "vor "+d+" Tg";}, noData:"keine Daten", kmAway:function(km){return km+" km entfernt";}, underKm:"unter 1 km entfernt", searchPlaceholder:"\u00dcberg\u00e4nge suchen\u2026", filterShortest:"K\u00fcrzeste Wartezeit", filterCommercial:"Lkw", updatedPrefix:"Aktualisiert", vsLastHour:"gg\u00fc. letzter Stunde", langLabel:"Sprache" },
+    sr: { title:"Vreme \u010dekanja", tagline:"Prijave \u010dekanja na granicama uživo, od ljudi koji su trenutno tamo \u2014 evropske kopnene granice na kojima zaista ima gu\u017evi.", protoNote:"Prijave se trenutno \u010duvaju samo na ovom ure\u0111aju. Uskoro sti\u017ee sinhronizacija u\u017eivo izme\u0111u svih korisnika.", mapHead:"Mapa graninih prelaza".replace("Graninih","Grani\u010dnih"), mapHint:"Dodirnite oznaku za prijavu", legendNone:"Jo\u0161 nema prijava", legendLow:"0\u201315 min", legendMid:"15\u201345 min", legendHigh:"45+ min", locateBtn:"Koristi moju lokaciju", locating:"Odre\u0111ivanje lokacije\u2026", locationDenied:"Pristup lokaciji odbijen \u2014 prikazani su svi prelazi", locationError:"Nije mogu\u0107e odrediti lokaciju \u2014 prikazani su svi prelazi", sortBusiest:"Najve\u0107e gu\u017eve", sortNearest:"Najbli\u017ei", closestBadge:"Najbli\u017ei", boardHead:"Trenutna \u010dekanja", crossingsCount:function(n){return n+" prelaza";}, tickerHead:"Nedavne prijave", tickerEmpty:"Jo\u0161 nema prijava na ovom ure\u0111aju. Dodirnite prelaz iznad i dodajte prvu prijavu.", footerClear:"Obri\u0161i demo podatke na ovom ure\u0111aju", modalTitle:"Prijavi \u010dekanje", labelCrossing:"Prelaz", labelDirection:"Smer", labelWait:"Vreme \u010dekanja (minuti)", minutesPlaceholder:"npr. 45", labelVehicle:"Vozilo", vehicleCar:"Automobil", vehicleTruck:"Kamion", vehicleBus:"Autobus", vehicleFoot:"Pe\u0161ice", labelNote:"Napomena (opciono)", notePlaceholder:"npr. otvorena samo jedna traka", submitBtn:"Po\u0161alji prijavu", toastAdded:"Prijava dodata", toastCleared:"Demo podaci obrisani", timeJustNow:"upravo sada", timeMinAgo:function(m){return "pre "+m+" min";}, timeHourAgo:function(h){return "pre "+h+" h";}, timeDayAgo:function(d){return "pre "+d+" d";}, noData:"nema podataka", kmAway:function(km){return km+" km udaljeno";}, underKm:"manje od 1 km", searchPlaceholder:"Pretra\u017ei prelaze\u2026", filterShortest:"Najkra\u0107e \u010dekanje", filterCommercial:"Kamioni", updatedPrefix:"A\u017eurirano", vsLastHour:"u odnosu na pro\u0161li sat", langLabel:"Jezik" },
+    mk: { title:"\u0412\u0440\u0435\u043c\u0438\u045a\u0430 \u043d\u0430 \u0447\u0435\u043a\u0430\u045a\u0435", tagline:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438 \u0437\u0430 \u0447\u0435\u043a\u0430\u045a\u0435 \u043d\u0430 \u0433\u0440\u0430\u043d\u0438\u0446\u0430 \u0432\u043e \u0436\u0438\u0432\u043e, \u043e\u0434 \u043b\u0443\u0453\u0435 \u043a\u043e\u0438 \u0441\u0435 \u0442\u043e\u043a\u043c\u0443 \u0442\u0430\u043c\u0443 \u2014 \u0435\u0432\u0440\u043e\u043f\u0441\u043a\u0438 \u043a\u043e\u043f\u043d\u0435\u043d\u0438 \u0433\u0440\u0430\u043d\u0438\u0446\u0438 \u043a\u0430\u0434\u0435 \u0448\u0442\u043e \u043d\u0430\u0432\u0438\u0441\u0442\u0438\u043d\u0430 \u0438\u043c\u0430 \u0437\u0430\u0434\u0440\u0436\u0443\u0432\u0430\u045a\u0435.", protoNote:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438\u0442\u0435 \u043c\u043e\u043c\u0435\u043d\u0442\u0430\u043b\u043d\u043e \u0441\u0435 \u0447\u0443\u0432\u0430\u0430\u0442 \u0441\u0430\u043c\u043e \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434. \u0421\u0438\u043d\u0445\u0440\u043e\u043d\u0438\u0437\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u0432\u043e \u0436\u0438\u0432\u043e \u0441\u043e \u0441\u0438\u0442\u0435 \u043a\u043e\u0440\u0438\u0441\u043d\u0438\u0446\u0438 \u0434\u043e\u0430\u0453\u0430 \u043d\u0430\u0441\u043a\u043e\u0440\u043e.", mapHead:"\u041c\u0430\u043f\u0430 \u043d\u0430 \u0433\u0440\u0430\u043d\u0438\u0447\u043d\u0438 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", mapHint:"\u0414\u043e\u043f\u0440\u0435\u0442\u0435 \u043e\u0437\u043d\u0430\u043a\u0430 \u0437\u0430 \u0434\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438\u0442\u0435", legendNone:"\u0421\u0451 \u0443\u0448\u0442\u0435 \u043d\u0435\u043c\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438", legendLow:"0\u201315 \u043c\u0438\u043d", legendMid:"15\u201345 \u043c\u0438\u043d", legendHigh:"45+ \u043c\u0438\u043d", locateBtn:"\u041a\u043e\u0440\u0438\u0441\u0442\u0438 \u0458\u0430 \u043c\u043e\u0458\u0430\u0442\u0430 \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430", locating:"\u0421\u0435 \u043b\u043e\u0446\u0438\u0440\u0430\u2026", locationDenied:"\u041f\u0440\u0438\u0441\u0442\u0430\u043f\u043e\u0442 \u0434\u043e \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u0435 \u043e\u0434\u0431\u0438\u0435\u043d \u2014 \u043f\u0440\u0438\u043a\u0430\u0436\u0430\u043d\u0438 \u0441\u0435 \u0441\u0438\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", locationError:"\u041d\u0435 \u043c\u043e\u0436\u0435\u0448\u0435 \u0434\u0430 \u0441\u0435 \u043e\u0434\u0440\u0435\u0434\u0438 \u043b\u043e\u043a\u0430\u0446\u0438\u0458\u0430\u0442\u0430 \u2014 \u043f\u0440\u0438\u043a\u0430\u0436\u0430\u043d\u0438 \u0441\u0435 \u0441\u0438\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d\u0438", sortBusiest:"\u041d\u0430\u0458\u0437\u0430\u0444\u0430\u0442\u0435\u043d\u0438", sortNearest:"\u041d\u0430\u0458\u0431\u043b\u0438\u0441\u043a\u0438", closestBadge:"\u041d\u0430\u0458\u0431\u043b\u0438\u0441\u043a\u0443", boardHead:"\u0422\u0435\u043a\u043e\u0432\u043d\u0438 \u0447\u0435\u043a\u0430\u045a\u0430", crossingsCount:function(n){return n+" \u043f\u0440\u0435\u043c\u0438\u043d\u0438";}, tickerHead:"\u041d\u0435\u043e\u0434\u0430\u043c\u043d\u0435\u0448\u043d\u0438 \u043f\u0440\u0438\u0458\u0430\u0432\u0438", tickerEmpty:"\u0421\u0451 \u0443\u0448\u0442\u0435 \u043d\u0435\u043c\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0438 \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434. \u0414\u043e\u043f\u0440\u0435\u0442\u0435 \u043f\u0440\u0435\u043c\u0438\u043d \u043f\u043e\u0433\u043e\u0440\u0435 \u0438 \u0434\u043e\u0434\u0430\u0434\u0435\u0442\u0435 \u0458\u0430 \u043f\u0440\u0432\u0430\u0442\u0430 \u043f\u0440\u0438\u0458\u0430\u0432\u0430.", footerClear:"\u0418\u0437\u0431\u0440\u0438\u0448\u0438 \u0434\u0435\u043c\u043e \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438 \u043d\u0430 \u043e\u0432\u043e\u0458 \u0443\u0440\u0435\u0434", modalTitle:"\u041f\u0440\u0438\u0458\u0430\u0432\u0438 \u0447\u0435\u043a\u0430\u045a\u0435", labelCrossing:"\u041f\u0440\u0435\u043c\u0438\u043d", labelDirection:"\u041d\u0430\u0441\u043e\u043a\u0430", labelWait:"\u0412\u0440\u0435\u043c\u0435 \u043d\u0430 \u0447\u0435\u043a\u0430\u045a\u0435 (\u043c\u0438\u043d\u0443\u0442\u0438)", minutesPlaceholder:"\u043d\u0430 \u043f\u0440. 45", labelVehicle:"\u0412\u043e\u0437\u0438\u043b\u043e", vehicleCar:"\u0410\u0432\u0442\u043e\u043c\u043e\u0431\u0438\u043b", vehicleTruck:"\u041a\u0430\u043c\u0438\u043e\u043d", vehicleBus:"\u0410\u0432\u0442\u043e\u0431\u0443\u0441", vehicleFoot:"\u041f\u0435\u0448\u043a\u0438", labelNote:"\u0411\u0435\u043b\u0435\u0448\u043a\u0430 (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u043d\u043e)", notePlaceholder:"\u043d\u0430 \u043f\u0440. \u043e\u0442\u0432\u043e\u0440\u0435\u043d\u0430 \u0441\u0430\u043c\u043e \u0435\u0434\u043d\u0430 \u043b\u0435\u043d\u0442\u0430", submitBtn:"\u0418\u0441\u043f\u0440\u0430\u0442\u0438 \u043f\u0440\u0438\u0458\u0430\u0432\u0430", toastAdded:"\u041f\u0440\u0438\u0458\u0430\u0432\u0430\u0442\u0430 \u0435 \u0434\u043e\u0434\u0430\u0434\u0435\u043d\u0430", toastCleared:"\u0414\u0435\u043c\u043e \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438\u0442\u0435 \u0441\u0435 \u0438\u0437\u0431\u0440\u0438\u0448\u0430\u043d\u0438", timeJustNow:"\u0442\u043e\u043a\u043c\u0443 \u0441\u0435\u0433\u0430", timeMinAgo:function(m){return "\u043f\u0440\u0435\u0434 "+m+" \u043c\u0438\u043d";}, timeHourAgo:function(h){return "\u043f\u0440\u0435\u0434 "+h+" \u0447";}, timeDayAgo:function(d){return "\u043f\u0440\u0435\u0434 "+d+" \u0434";}, noData:"\u043d\u0435\u043c\u0430 \u043f\u043e\u0434\u0430\u0442\u043e\u0446\u0438", kmAway:function(km){return km+" \u043a\u043c \u043e\u0434\u0434\u0430\u043b\u0435\u0447\u0435\u043d\u043e\u0441\u0442";}, underKm:"\u043f\u043e\u043c\u0430\u043b\u043a\u0443 \u043e\u0434 1 \u043a\u043c", searchPlaceholder:"\u041f\u0440\u0435\u0431\u0430\u0440\u0430\u0458 \u043f\u0440\u0435\u043c\u0438\u043d\u0438\u2026", filterShortest:"\u041d\u0430\u0458\u043a\u0440\u0430\u0442\u043a\u043e \u0447\u0435\u043a\u0430\u045a\u0435", filterCommercial:"\u041a\u0430\u043c\u0438\u043e\u043d\u0438", updatedPrefix:"\u0410\u0436\u0443\u0440\u0438\u0440\u0430\u043d\u043e", vsLastHour:"\u0432\u043e \u043e\u0434\u043d\u043e\u0441 \u043d\u0430 \u043c\u0438\u043d\u0430\u0442\u0438\u043e\u0442 \u0447\u0430\u0441", langLabel:"\u0408\u0430\u0437\u0438\u043a" },
+    tr: { title:"Ge\u00e7i\u015f S\u00fcreleri", tagline:"S\u0131n\u0131rda ger\u00e7ekten bulunan ki\u015filerden canl\u0131 bekleme s\u00fcresi bildirimleri \u2014 ger\u00e7ekten kuyruk olan Avrupa kara s\u0131n\u0131rlar\u0131.", protoNote:"Bildirimler \u015fu anda yaln\u0131zca bu cihazda kaydediliyor. T\u00fcm kullan\u0131c\u0131lar aras\u0131nda canl\u0131 senkronizasyon yak\u0131nda geliyor.", mapHead:"S\u0131n\u0131r kap\u0131lar\u0131 haritas\u0131", mapHint:"Bildirmek i\u00e7in bir i\u015farete dokunun", legendNone:"Hen\u00fcz bildirim yok", legendLow:"0\u201315 dakika", legendMid:"15\u201345 dakika", legendHigh:"45+ dakika", locateBtn:"Konumumu kullan", locating:"Konum belirleniyor\u2026", locationDenied:"Konum izni reddedildi \u2014 t\u00fcm ge\u00e7i\u015fler g\u00f6steriliyor", locationError:"Konum al\u0131namad\u0131 \u2014 t\u00fcm ge\u00e7i\u015fler g\u00f6steriliyor", sortBusiest:"En yo\u011fun", sortNearest:"En yak\u0131n", closestBadge:"En yak\u0131n", boardHead:"G\u00fcncel bekleme s\u00fcreleri", crossingsCount:function(n){return n+" ge\u00e7i\u015f";}, tickerHead:"Son bildirimler", tickerEmpty:"Bu cihazda hen\u00fcz bildirim yok. Yukar\u0131dan bir ge\u00e7i\u015fe dokunun ve ilk bildirimi ekleyin.", footerClear:"Bu cihazdaki demo verilerini temizle", modalTitle:"Bekleme s\u00fcresi bildir", labelCrossing:"S\u0131n\u0131r kap\u0131s\u0131", labelDirection:"Y\u00f6n", labelWait:"Bekleme s\u00fcresi (dakika)", minutesPlaceholder:"\u00f6rn. 45", labelVehicle:"Ara\u00e7", vehicleCar:"Otomobil", vehicleTruck:"Kamyon", vehicleBus:"Otob\u00fcs", vehicleFoot:"Yaya", labelNote:"Not (iste\u011fe ba\u011fl\u0131)", notePlaceholder:"\u00f6rn. sadece bir \u015ferit a\u00e7\u0131k", submitBtn:"Bildirimi g\u00f6nder", toastAdded:"Bildirim eklendi", toastCleared:"Demo verileri temizlendi", timeJustNow:"az \u00f6nce", timeMinAgo:function(m){return m+" dk \u00f6nce";}, timeHourAgo:function(h){return h+" sa \u00f6nce";}, timeDayAgo:function(d){return d+" g\u00fcn \u00f6nce";}, noData:"veri yok", kmAway:function(km){return km+" km uzakta";}, underKm:"1 km\u2019den az", searchPlaceholder:"Ge\u00e7i\u015f ara\u2026", filterShortest:"En k\u0131sa bekleme", filterCommercial:"Kamyon", updatedPrefix:"G\u00fcncellendi", vsLastHour:"son saate g\u00f6re", langLabel:"Dil" },
+    el: { title:"\u03a7\u03c1\u03cc\u03bd\u03bf\u03b9 \u0394\u03b9\u03ad\u03bb\u03b5\u03c5\u03c3\u03b7\u03c2", tagline:"Live \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2 \u03c3\u03c4\u03b1 \u03c3\u03cd\u03bd\u03bf\u03c1\u03b1 \u03b1\u03c0\u03cc \u03b1\u03bd\u03b8\u03c1\u03ce\u03c0\u03bf\u03c5\u03c2 \u03c0\u03bf\u03c5 \u03b2\u03c1\u03af\u03c3\u03ba\u03bf\u03bd\u03c4\u03b1\u03b9 \u03b5\u03ba\u03b5\u03af \u2014 \u03b5\u03c5\u03c1\u03c9\u03c0\u03b1\u03ca\u03ba\u03ac \u03c7\u03b5\u03c1\u03c3\u03b1\u03af\u03b1 \u03c3\u03cd\u03bd\u03bf\u03c1\u03b1 \u03cc\u03c0\u03bf\u03c5 \u03cc\u03bd\u03c4\u03c9\u03c2 \u03c5\u03c0\u03ac\u03c1\u03c7\u03bf\u03c5\u03bd \u03bf\u03c5\u03c1\u03ad\u03c2.", protoNote:"\u039f\u03b9 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03b1\u03c0\u03bf\u03b8\u03b7\u03ba\u03b5\u03cd\u03bf\u03bd\u03c4\u03b1\u03b9 \u03c0\u03c1\u03bf\u03c2 \u03c4\u03bf \u03c0\u03b1\u03c1\u03cc\u03bd \u03bc\u03cc\u03bd\u03bf \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae. \u039f \u03c3\u03c5\u03b3\u03c7\u03c1\u03bf\u03bd\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c3\u03b5 \u03c0\u03c1\u03b1\u03b3\u03bc\u03b1\u03c4\u03b9\u03ba\u03cc \u03c7\u03c1\u03cc\u03bd\u03bf \u03bc\u03b5\u03c4\u03b1\u03be\u03cd \u03cc\u03bb\u03c9\u03bd \u03c4\u03c9\u03bd \u03c7\u03c1\u03b7\u03c3\u03c4\u03ce\u03bd \u03ad\u03c1\u03c7\u03b5\u03c4\u03b1\u03b9 \u03c3\u03cd\u03bd\u03c4\u03bf\u03bc\u03b1.", mapHead:"\u03a7\u03ac\u03c1\u03c4\u03b7\u03c2 \u03c3\u03c5\u03bd\u03bf\u03c1\u03b9\u03b1\u03ba\u03ce\u03bd \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03c9\u03bd", mapHint:"\u03a0\u03b1\u03c4\u03ae\u03c3\u03c4\u03b5 \u03bc\u03b9\u03b1 \u03ba\u03b1\u03c1\u03c6\u03af\u03c4\u03c3\u03b1 \u03b3\u03b9\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac", legendNone:"\u039a\u03b1\u03bc\u03af\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03b1\u03ba\u03cc\u03bc\u03b1", legendLow:"0\u201315 \u03bb\u03b5\u03c0\u03c4\u03ac", legendMid:"15\u201345 \u03bb\u03b5\u03c0\u03c4\u03ac", legendHigh:"45+ \u03bb\u03b5\u03c0\u03c4\u03ac", locateBtn:"\u03a7\u03c1\u03ae\u03c3\u03b7 \u03c4\u03b7\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2 \u03bc\u03bf\u03c5", locating:"\u0395\u03bd\u03c4\u03bf\u03c0\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2\u2026", locationDenied:"\u0397 \u03c0\u03c1\u03cc\u03c3\u03b2\u03b1\u03c3\u03b7 \u03c3\u03c4\u03b7\u03bd \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1 \u03b1\u03c0\u03bf\u03c1\u03c1\u03af\u03c6\u03b8\u03b7\u03ba\u03b5 \u2014 \u03b5\u03bc\u03c6\u03b1\u03bd\u03af\u03b6\u03bf\u03bd\u03c4\u03b1\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2", locationError:"\u0394\u03b5\u03bd \u03ae\u03c4\u03b1\u03bd \u03b4\u03c5\u03bd\u03b1\u03c4\u03cc\u03c2 \u03bf \u03b5\u03bd\u03c4\u03bf\u03c0\u03b9\u03c3\u03bc\u03cc\u03c2 \u03c4\u03b7\u03c2 \u03c4\u03bf\u03c0\u03bf\u03b8\u03b5\u03c3\u03af\u03b1\u03c2 \u2014 \u03b5\u03bc\u03c6\u03b1\u03bd\u03af\u03b6\u03bf\u03bd\u03c4\u03b1\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2", sortBusiest:"\u03a0\u03b9\u03bf \u03c0\u03bf\u03bb\u03c5\u03c3\u03cd\u03c7\u03bd\u03b1\u03c3\u03c4\u03b5\u03c2", sortNearest:"\u03a0\u03bb\u03b7\u03c3\u03b9\u03ad\u03c3\u03c4\u03b5\u03c1\u03b5\u03c2", closestBadge:"\u03a0\u03bb\u03b7\u03c3\u03b9\u03ad\u03c3\u03c4\u03b5\u03c1\u03b7", boardHead:"\u03a4\u03c1\u03ad\u03c7\u03bf\u03bd\u03c4\u03b5\u03c2 \u03c7\u03c1\u03cc\u03bd\u03bf\u03b9 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2", crossingsCount:function(n){return n+" \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03b9\u03c2";}, tickerHead:"\u03a0\u03c1\u03cc\u03c3\u03c6\u03b1\u03c4\u03b5\u03c2 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2", tickerEmpty:"\u0394\u03b5\u03bd \u03c5\u03c0\u03ac\u03c1\u03c7\u03bf\u03c5\u03bd \u03b1\u03ba\u03cc\u03bc\u03b1 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ad\u03c2 \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae. \u03a0\u03b1\u03c4\u03ae\u03c3\u03c4\u03b5 \u03bc\u03b9\u03b1 \u03b4\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7 \u03c0\u03b1\u03c1\u03b1\u03c0\u03ac\u03bd\u03c9 \u03ba\u03b1\u03b9 \u03c0\u03c1\u03bf\u03c3\u03b8\u03ad\u03c3\u03c4\u03b5 \u03c4\u03b7\u03bd \u03c0\u03c1\u03ce\u03c4\u03b7 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac.", footerClear:"\u0394\u03b9\u03b1\u03b3\u03c1\u03b1\u03c6\u03ae \u03b4\u03bf\u03ba\u03b9\u03bc\u03b1\u03c3\u03c4\u03b9\u03ba\u03ce\u03bd \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03c9\u03bd \u03c3\u03b5 \u03b1\u03c5\u03c4\u03ae \u03c4\u03b7 \u03c3\u03c5\u03c3\u03ba\u03b5\u03c5\u03ae", modalTitle:"\u0391\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03c7\u03c1\u03cc\u03bd\u03bf\u03c5 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2", labelCrossing:"\u0394\u03b9\u03ac\u03b2\u03b1\u03c3\u03b7", labelDirection:"\u039a\u03b1\u03c4\u03b5\u03cd\u03b8\u03c5\u03bd\u03c3\u03b7", labelWait:"\u03a7\u03c1\u03cc\u03bd\u03bf\u03c2 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae\u03c2 (\u03bb\u03b5\u03c0\u03c4\u03ac)", minutesPlaceholder:"\u03c0.\u03c7. 45", labelVehicle:"\u038c\u03c7\u03b7\u03bc\u03b1", vehicleCar:"\u0391\u03c5\u03c4\u03bf\u03ba\u03af\u03bd\u03b7\u03c4\u03bf", vehicleTruck:"\u03a6\u03bf\u03c1\u03c4\u03b7\u03b3\u03cc", vehicleBus:"\u039b\u03b5\u03c9\u03c6\u03bf\u03c1\u03b5\u03af\u03bf", vehicleFoot:"\u03a0\u03b5\u03b6\u03cc\u03c2", labelNote:"\u03a3\u03b7\u03bc\u03b5\u03af\u03c9\u03c3\u03b7 (\u03c0\u03c1\u03bf\u03b1\u03b9\u03c1\u03b5\u03c4\u03b9\u03ba\u03cc)", notePlaceholder:"\u03c0.\u03c7. \u03bc\u03cc\u03bd\u03bf \u03bc\u03af\u03b1 \u03bb\u03c9\u03c1\u03af\u03b4\u03b1 \u03b1\u03bd\u03bf\u03b9\u03c7\u03c4\u03ae", submitBtn:"\u03a5\u03c0\u03bf\u03b2\u03bf\u03bb\u03ae \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac\u03c2", toastAdded:"\u0397 \u03b1\u03bd\u03b1\u03c6\u03bf\u03c1\u03ac \u03c0\u03c1\u03bf\u03c3\u03c4\u03ad\u03b8\u03b7\u03ba\u03b5", toastCleared:"\u03a4\u03b1 \u03b4\u03bf\u03ba\u03b9\u03bc\u03b1\u03c3\u03c4\u03b9\u03ba\u03ac \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03b1 \u03b4\u03b9\u03b1\u03b3\u03c1\u03ac\u03c6\u03b7\u03ba\u03b1\u03bd", timeJustNow:"\u03bc\u03cc\u03bb\u03b9\u03c2 \u03c4\u03ce\u03c1\u03b1", timeMinAgo:function(m){return "\u03c0\u03c1\u03b9\u03bd "+m+" \u03bb";}, timeHourAgo:function(h){return "\u03c0\u03c1\u03b9\u03bd "+h+" \u03ce";}, timeDayAgo:function(d){return "\u03c0\u03c1\u03b9\u03bd "+d+" \u03b7";}, noData:"\u03c7\u03c9\u03c1\u03af\u03c2 \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03b1", kmAway:function(km){return km+" \u03c7\u03bb\u03bc \u03bc\u03b1\u03ba\u03c1\u03b9\u03ac";}, underKm:"\u03bb\u03b9\u03b3\u03cc\u03c4\u03b5\u03c1\u03bf \u03b1\u03c0\u03cc 1 \u03c7\u03bb\u03bc", searchPlaceholder:"\u0391\u03bd\u03b1\u03b6\u03ae\u03c4\u03b7\u03c3\u03b7 \u03b4\u03b9\u03b1\u03b2\u03ac\u03c3\u03b5\u03c9\u03bd\u2026", filterShortest:"\u03a3\u03c5\u03bd\u03c4\u03bf\u03bc\u03cc\u03c4\u03b5\u03c1\u03b7 \u03b1\u03bd\u03b1\u03bc\u03bf\u03bd\u03ae", filterCommercial:"\u03a6\u03bf\u03c1\u03c4\u03b7\u03b3\u03ac", updatedPrefix:"\u0395\u03bd\u03b7\u03bc\u03b5\u03c1\u03ce\u03b8\u03b7\u03ba\u03b5", vsLastHour:"\u03c3\u03b5 \u03c3\u03c7\u03ad\u03c3\u03b7 \u03bc\u03b5 \u03c4\u03b7\u03bd \u03c0\u03c1\u03bf\u03b7\u03b3\u03bf\u03cd\u03bc\u03b5\u03bd\u03b7 \u03ce\u03c1\u03b1", langLabel:"\u0393\u03bb\u03ce\u03c3\u03c3\u03b1" }
   };
   var LANG_NAMES = { en:"English", de:"Deutsch", sr:"Srpski", mk:"\u041c\u0430\u043a\u0435\u0434\u043e\u043d\u0441\u043a\u0438", tr:"T\u00fcrk\u00e7e", el:"\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac" };
 
@@ -305,7 +364,8 @@
   /* ---------------- State & storage ---------------- */
   var STORE_KEY = "borderwait_reports_v1";
   var FOUR_HOURS = 4 * 60 * 60 * 1000;
-  var sortMode = "wait";
+  var activeFilter = null; // null | "distance" | "shortest" | "commercial"
+  var searchQuery = "";
   var userLoc = null;
 
   function loadReports() {
@@ -314,14 +374,33 @@
   function saveReports(list) { try { localStorage.setItem(STORE_KEY, JSON.stringify(list)); } catch (e) {} }
   var reports = loadReports();
 
-  function avgWait(crossingId) {
+  function reportsFor(crossingId, vehicle, withinMs, olderThanMs) {
     var now = Date.now();
-    var relevant = reports.filter(function (r) { return r.crossingId === crossingId && (now - r.ts) < FOUR_HOURS; });
-    if (!relevant.length) return null;
-    var sum = relevant.reduce(function (s, r) { return s + r.minutes; }, 0);
-    return { minutes: Math.round(sum / relevant.length), latest: Math.max.apply(null, relevant.map(function (r) { return r.ts; })), count: relevant.length };
+    return reports.filter(function (r) {
+      if (r.crossingId !== crossingId) return false;
+      if (vehicle && r.vehicle !== vehicle) return false;
+      var age = now - r.ts;
+      if (withinMs !== undefined && age > withinMs) return false;
+      if (olderThanMs !== undefined && age <= olderThanMs) return false;
+      return true;
+    });
   }
-  function bucket(min) { if (min === null) return "none"; if (min < 20) return "low"; if (min < 60) return "mid"; return "high"; }
+  function avgOf(list) {
+    if (!list.length) return null;
+    var sum = list.reduce(function (s, r) { return s + r.minutes; }, 0);
+    return { minutes: Math.round(sum / list.length), latest: Math.max.apply(null, list.map(function (r) { return r.ts; })), count: list.length };
+  }
+  function avgWait(crossingId) { return avgOf(reportsFor(crossingId, null, FOUR_HOURS)); }
+  function avgWaitByVehicle(crossingId, vehicle) { return avgOf(reportsFor(crossingId, vehicle, FOUR_HOURS)); }
+  function trendFor(crossingId) {
+    var recent = avgOf(reportsFor(crossingId, null, 60 * 60 * 1000));
+    var older = avgOf(reportsFor(crossingId, null, 4 * 60 * 60 * 1000, 60 * 60 * 1000));
+    if (!recent || !older) return null;
+    var delta = Math.round(recent.minutes - older.minutes);
+    if (Math.abs(delta) < 3) return null;
+    return delta;
+  }
+  function bucket(min) { if (min === null || min === undefined) return "none"; if (min < 15) return "low"; if (min < 45) return "mid"; return "high"; }
   function relTime(ts) {
     var diff = Math.max(0, Date.now() - ts);
     var m = Math.round(diff / 60000);
@@ -336,14 +415,8 @@
     var a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   }
-  function distanceTo(c) {
-    if (!userLoc) return null;
-    return haversineKm(userLoc.lat, userLoc.lng, c.lat, c.lng);
-  }
-  function distanceText(km) {
-    if (km < 1) return t("underKm");
-    return t("kmAway")(Math.round(km));
-  }
+  function distanceTo(c) { if (!userLoc) return null; return haversineKm(userLoc.lat, userLoc.lng, c.lat, c.lng); }
+  function distanceText(km) { if (km < 1) return t("underKm"); return t("kmAway")(Math.round(km)); }
 
   /* ---------------- DOM refs ---------------- */
   var mapbox = document.getElementById("mapbox");
@@ -359,9 +432,11 @@
   var noteInput = document.getElementById("note-input");
   var toast = document.getElementById("toast");
   var langSelect = document.getElementById("lang-select");
-  var sortToggle = document.getElementById("sort-toggle");
   var locateBtn = document.getElementById("locate-btn");
   var locateStatus = document.getElementById("locate-status");
+  var searchInput = document.getElementById("search-input");
+  var filterPills = document.getElementById("filter-pills");
+  var stickyBar = document.getElementById("sticky-bar");
 
   var selectedVehicle = "car";
   var selectedDirection = 0;
@@ -372,10 +447,10 @@
   var userMarker = null;
 
   function iconFor(min) {
-    return L.divIcon({ className: "", html: '<div class="crossing-marker wait-' + bucket(min) + '"></div>', iconSize: [18, 18], iconAnchor: [9, 9], popupAnchor: [0, -10] });
+    return L.divIcon({ className: "", html: '<div class="crossing-marker wait-' + bucket(min) + '"></div>', iconSize: [16, 16], iconAnchor: [8, 8], popupAnchor: [0, -10] });
   }
   function userIcon() {
-    return L.divIcon({ className: "", html: '<div class="user-marker-dot"></div>', iconSize: [16, 16], iconAnchor: [8, 8] });
+    return L.divIcon({ className: "", html: '<div class="user-marker-dot"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
   }
   function popupHtml(c, avg) {
     var waitText = avg ? avg.minutes + " min avg (" + avg.count + ")" : t("legendNone");
@@ -401,31 +476,84 @@
     });
   }
 
-  /* ---------------- Board & ticker ---------------- */
+  /* ---------------- Cards & ticker ---------------- */
+  var VEHICLE_TYPES = ["car", "truck", "bus", "foot"];
+  function vehicleLabel(v) { return { car: t("vehicleCar"), truck: t("vehicleTruck"), bus: t("vehicleBus"), foot: t("vehicleFoot") }[v] || v; }
+
+  function matchesSearch(c, q) {
+    if (!q) return true;
+    q = q.toLowerCase();
+    return c.name.toLowerCase().indexOf(q) !== -1 ||
+      countryName(c.a).toLowerCase().indexOf(q) !== -1 ||
+      countryName(c.b).toLowerCase().indexOf(q) !== -1;
+  }
+
   function buildBoard() {
-    var rows = CROSSINGS.map(function (c) { return { c: c, avg: avgWait(c.id), dist: distanceTo(c) }; });
-    if (sortMode === "distance" && userLoc) {
+    var rows = CROSSINGS.filter(function (c) { return matchesSearch(c, searchQuery); }).map(function (c) {
+      return { c: c, avg: avgWait(c.id), dist: distanceTo(c), truckAvg: avgWaitByVehicle(c.id, "truck"), trend: trendFor(c.id) };
+    });
+
+    if (activeFilter === "distance" && userLoc) {
       rows.sort(function (p, q) { return p.dist - q.dist; });
+    } else if (activeFilter === "shortest") {
+      rows.sort(function (p, q) { var av = p.avg ? p.avg.minutes : 9999, bv = q.avg ? q.avg.minutes : 9999; return av - bv; });
+    } else if (activeFilter === "commercial") {
+      rows = rows.filter(function (r) { return r.truckAvg !== null; });
+      rows.sort(function (p, q) { return p.truckAvg.minutes - q.truckAvg.minutes; });
     } else {
       rows.sort(function (p, q) { var av = p.avg ? p.avg.minutes : -1, bv = q.avg ? q.avg.minutes : -1; return bv - av; });
     }
+
+    boardCount.textContent = t("crossingsCount")(rows.length);
     boardRows.innerHTML = "";
-    boardCount.textContent = t("crossingsCount")(CROSSINGS.length);
+
+    if (!rows.length) {
+      var empty = document.createElement("div");
+      empty.className = "no-results";
+      empty.textContent = t("tickerEmpty");
+      boardRows.appendChild(empty);
+      return;
+    }
+
     rows.forEach(function (p, idx) {
-      var row = document.createElement("button");
-      row.className = "row";
-      row.addEventListener("click", function () { openModal(p.c.id); });
-      var waitClass = p.avg ? "" : "none";
-      var waitTextVal = p.avg ? p.avg.minutes + "m" : "\u2014";
-      var closest = (sortMode === "distance" && userLoc && idx === 0) ? ' <span class="badge-closest">' + t("closestBadge") + "</span>" : "";
-      var distLine = (userLoc && p.dist !== null) ? '<div class="row-distance">' + distanceText(p.dist) + "</div>" : "";
-      row.innerHTML =
-        '<div><div class="row-name">' + p.c.name + closest + '</div><div class="row-route">' + countryName(p.c.a) + " \u2194 " + countryName(p.c.b) + "</div>" + distLine + "</div>" +
-        '<div class="row-wait ' + waitClass + '">' + waitTextVal + "</div>" +
-        '<div class="row-updated">' + (p.avg ? relTime(p.avg.latest) : t("noData")) + "</div>";
-      boardRows.appendChild(row);
+      var card = document.createElement("button");
+      card.className = "cc-card";
+      card.addEventListener("click", function () { openModal(p.c.id); });
+
+      var waitClass = p.avg ? bucket(p.avg.minutes) : "none";
+      var waitNum = p.avg ? p.avg.minutes : "\u2014";
+      var closest = (activeFilter === "distance" && userLoc && idx === 0) ? ' <span class="badge-closest">' + t("closestBadge") + "</span>" : "";
+
+      var metaParts = [];
+      metaParts.push('<span>' + (p.avg ? t("updatedPrefix") + " " + relTime(p.avg.latest) : t("legendNone")) + '</span>');
+      if (userLoc && p.dist !== null) metaParts.push('<span>' + distanceText(p.dist) + '</span>');
+      if (p.trend !== null) {
+        var trendClass = p.trend > 0 ? "up" : "down";
+        var arrow = p.trend > 0 ? "\u2191" : "\u2193";
+        var deltaText = (p.trend > 0 ? "+" : "") + p.trend + " min " + t("vsLastHour");
+        metaParts.push('<span class="cc-trend ' + trendClass + '">' + arrow + " " + deltaText + '</span>');
+      }
+
+      var chips = VEHICLE_TYPES.map(function (v) {
+        var va = avgWaitByVehicle(p.c.id, v);
+        var vClass = va ? bucket(va.minutes) : "none";
+        var vText = va ? va.minutes + "m" : "\u2014";
+        return '<span class="cc-chip"><span class="dot ' + vClass + '"></span>' + vehicleLabel(v) + " " + vText + "</span>";
+      }).join("");
+
+      card.innerHTML =
+        '<div class="cc-top">' +
+          '<div><div class="cc-name">' + p.c.name + closest + '</div>' +
+          '<div class="cc-route">' + countryName(p.c.a) + " \u2194 " + countryName(p.c.b) + '</div></div>' +
+          '<div class="cc-wait-pill"><div class="cc-wait-num ' + waitClass + '">' + waitNum + '</div>' +
+          (p.avg ? '<div class="cc-wait-unit">min</div>' : '') + '</div>' +
+        '</div>' +
+        '<div class="cc-meta">' + metaParts.join("") + '</div>' +
+        '<div class="cc-lanes">' + chips + '</div>';
+      boardRows.appendChild(card);
     });
   }
+
   function buildTicker() {
     var recent = reports.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, 12);
     if (!recent.length) { ticker.innerHTML = '<div class="empty">' + t("tickerEmpty") + "</div>"; return; }
@@ -433,13 +561,12 @@
     recent.forEach(function (r) {
       var c = CROSSINGS.find(function (x) { return x.id === r.crossingId; });
       if (!c) return;
-      var vehicleLabel = { car: t("vehicleCar"), truck: t("vehicleTruck"), bus: t("vehicleBus"), foot: t("vehicleFoot") }[r.vehicle] || r.vehicle;
       var dirText = r.direction === 0 ? (countryName(c.a) + " \u2192 " + countryName(c.b)) : (countryName(c.b) + " \u2192 " + countryName(c.a));
       var item = document.createElement("div");
       item.className = "ticker-item";
       item.innerHTML =
         '<div class="ticker-dot wait-' + bucket(r.minutes) + '"></div>' +
-        '<div class="ticker-text"><b>' + c.name + "</b> \u2014 " + r.minutes + " min, " + vehicleLabel + ", " + dirText +
+        '<div class="ticker-text"><b>' + c.name + "</b> \u2014 " + r.minutes + " min, " + vehicleLabel(r.vehicle) + ", " + dirText +
         (r.note ? ' <span style="color:var(--text-faint)">\u201c' + escapeHtml(r.note) + '\u201d</span>' : "") +
         '<div class="ticker-time">' + relTime(r.ts) + "</div></div>";
       ticker.appendChild(item);
@@ -473,12 +600,12 @@
   }
   function buildVehicleSeg() {
     vehicleSeg.innerHTML = "";
-    [["car", t("vehicleCar")], ["truck", t("vehicleTruck")], ["bus", t("vehicleBus")], ["foot", t("vehicleFoot")]].forEach(function (pair) {
+    VEHICLE_TYPES.forEach(function (v) {
       var btn = document.createElement("button");
-      btn.type = "button"; btn.dataset.v = pair[0]; btn.textContent = pair[1];
-      if (pair[0] === selectedVehicle) btn.className = "active";
+      btn.type = "button"; btn.dataset.v = v; btn.textContent = vehicleLabel(v);
+      if (v === selectedVehicle) btn.className = "active";
       btn.addEventListener("click", function () {
-        selectedVehicle = pair[0];
+        selectedVehicle = v;
         Array.prototype.forEach.call(vehicleSeg.children, function (b) { b.classList.toggle("active", b === btn); });
       });
       vehicleSeg.appendChild(btn);
@@ -532,8 +659,8 @@
       userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       locateBtn.disabled = false;
       locateStatus.textContent = "";
-      sortMode = "distance";
-      updateSortToggle();
+      activeFilter = "distance";
+      updateFilterPills();
       if (leafletMap) {
         if (userMarker) leafletMap.removeLayer(userMarker);
         userMarker = L.marker([userLoc.lat, userLoc.lng], { icon: userIcon(), zIndexOffset: 1000 }).addTo(leafletMap);
@@ -547,16 +674,25 @@
   }
   locateBtn.addEventListener("click", locate);
 
-  function updateSortToggle() {
-    Array.prototype.forEach.call(sortToggle.children, function (b) { b.classList.toggle("active", b.dataset.mode === sortMode); });
+  /* ---------------- Search & filter pills ---------------- */
+  function updateFilterPills() {
+    Array.prototype.forEach.call(filterPills.children, function (b) { b.classList.toggle("active", b.dataset.filter === activeFilter); });
   }
-  sortToggle.addEventListener("click", function (e) {
+  filterPills.addEventListener("click", function (e) {
     var btn = e.target.closest("button");
     if (!btn) return;
-    if (btn.dataset.mode === "distance" && !userLoc) { locate(); return; }
-    sortMode = btn.dataset.mode;
-    updateSortToggle();
+    var key = btn.dataset.filter;
+    if (key === "distance" && !userLoc) { locate(); return; }
+    activeFilter = (activeFilter === key) ? null : key;
+    updateFilterPills();
     buildBoard();
+  });
+  searchInput.addEventListener("input", function () {
+    searchQuery = searchInput.value.trim();
+    buildBoard();
+  });
+  window.addEventListener("scroll", function () {
+    stickyBar.classList.toggle("scrolled", window.scrollY > 4);
   });
 
   /* ---------------- i18n wiring ---------------- */
@@ -566,10 +702,15 @@
       var val = t(key);
       if (typeof val === "string") el.textContent = val;
     });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+      var key = el.getAttribute("data-i18n-placeholder");
+      var val = t(key);
+      if (typeof val === "string") el.placeholder = val;
+    });
     document.getElementById("html-root").lang = currentLang;
     minutesInput.placeholder = t("minutesPlaceholder");
     noteInput.placeholder = t("notePlaceholder");
-    updateSortToggle();
+    updateFilterPills();
   }
   function populateLangSelect() {
     langSelect.innerHTML = "";
