@@ -1,4 +1,4 @@
-const CACHE_NAME = "crossing-times-v1";
+const CACHE_NAME = "crossing-times-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -25,18 +25,36 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Images (icons) rarely change: cache-first is fine and fast.
+// Everything else (index.html, manifest.json) is network-first, so a fresh
+// deploy is picked up immediately whenever the phone is online. The cache
+// is only used as an offline fallback, not as the default source of truth.
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
+
+  var isImage = event.request.destination === "image";
+
+  if (isImage) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
+          var copy = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           return response;
-        })
-        .catch(() => cached);
-    })
+        });
+      })
+    );
+    return;
+  }
+
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        var copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
