@@ -32,6 +32,12 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
+  // Only manage this app's own same-origin files. Firebase/Firestore calls
+  // go to other origins (googleapis.com, gstatic.com) and must pass through
+  // untouched, or the app's live sync can break in confusing ways.
+  var url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
   var isImage = event.request.destination === "image";
 
   if (isImage) {
