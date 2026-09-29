@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Policy — Crossing Times</title>
+<meta name="theme-color" content="#121212">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #121212; --panel: #1B1B1E; --line: #2A2A2E;
+    --text: #F5F5F7; --text-dim: #A8ACB4; --accent: #3B82F6;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #F8F9FA; --panel: #FFFFFF; --line: #E5E7EB; --text: #111318; --text-dim: #4B5563; }
+  }
+  html { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif; line-height: 1.6;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 32px 20px 60px; }
+  h1 { font-size: 26px; font-weight: 800; margin: 0 0 6px; }
+  .updated { color: var(--text-dim); font-size: 13px; margin: 0 0 28px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 28px 0 8px; }
+  p, li { font-size: 14.5px; color: var(--text-dim); }
+  a { color: var(--accent); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; margin-bottom: 16px; }
+  .back { display: inline-block; margin-bottom: 20px; color: var(--text-dim); font-size: 13.5px; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">\u2190 Back to the app</a>
+  <h1>Privacy Policy</h1>
+  <p class="updated">Last updated: 2026</p>
+
+  <div class="card">
+    <p>Crossing Times is a community-reported border wait-time app. This page explains what data the app collects and how it's used, in plain language.</p>
+  </div>
+
+  <h2>What we collect</h2>
+  <p>When you submit a wait-time report, we store:</p>
+  <ul>
+    <li>The border crossing you selected</li>
+    <li>The wait time and vehicle type you entered</li>
+    <li>An optional short note, if you added one</li>
+    <li>The time of your report</li>
+  </ul>
+  <p>We do <strong>not</strong> collect your name, email, or any account information \u2014 the app doesn't require sign-in.</p>
+
+  <h2>Location</h2>
+  <p>If you tap "Use my location," your device's GPS coordinates are used <strong>only on your own device</strong> to sort crossings by distance and show a marker on the map. Your location is never sent to or stored on our servers.</p>
+
+  <h2>How report data is used</h2>
+  <p>Reports are shared with everyone using the app, in real time \u2014 that's the whole point: your report helps other travelers, and theirs help you. This data is public by design within the app.</p>
+
+  <h2>Where data is stored</h2>
+  <p>Reports are stored using Google Firebase (Firestore), Google's cloud database service. Data is retained only for a short rolling window (currently a few hours) since old wait-time reports aren't useful for current conditions.</p>
+
+  <h2>Local storage on your device</h2>
+  <p>The app saves a few small preferences directly on your device (not on our servers): your language choice, your theme preference, your favorited crossings, and a timestamp used to prevent rapid repeat submissions. You can clear these at any time by clearing your browser's site data for this app.</p>
+
+  <h2>Third parties</h2>
+  <p>Map tiles are loaded from <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>. No advertising or analytics trackers are used at this time.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy changes, the "last updated" date above will change too. Continued use of the app after an update means you accept the revised policy.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy can be sent to the app developer through the contact details listed on the app's store page.</p>
+</div>
+</body>
+</html>
